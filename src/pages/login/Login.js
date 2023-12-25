@@ -20,11 +20,11 @@ function Login() {
           data: {first_name:firstName,last_name:lastName,password:password}})
           console.log(res.data)
           localStorage.setItem("token", JSON.stringify(res.data.accessToken));
-          navigate("./register")
+          navigate("./home")
         }
           catch(err)
           {
-           setErr(err.response.data?.message);
+           alert(err.response.data?.message);
           }      
     }
   return (
@@ -43,4 +43,4 @@ function Login() {
   )
 }
 
-export default Login
+//export default Login
