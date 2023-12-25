@@ -7,9 +7,10 @@ import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
+import Alert from '@mui/material/Alert';
 
 export default function CreateVolunteer() {
-  const [formData, setFormData] = React.useState({
+  const initialFormData = {
     firstName: '',
     lastName: '',
     phone: '',
@@ -19,14 +20,23 @@ export default function CreateVolunteer() {
     street: '',
     identityNumber: '',
     dateOfBirth: '',
-  });
+  };
+
+  const [formData, setFormData] = React.useState(initialFormData);
+  const [isFormModified, setIsFormModified] = React.useState(false);
+  const [err, setError] = React.useState(null);
+
+  const cleanData = () => {
+    setFormData(initialFormData);
+    setIsFormModified(false);
+  };
 
   const handleFieldChange = (field, value) => {
     setFormData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
-    //console.log(formData);
+    setIsFormModified(true);
   };
 
   const handleCityChange = (event) => {
@@ -36,27 +46,49 @@ export default function CreateVolunteer() {
   const handleTextChange = (field) => (event) => {
     handleFieldChange(field, event.target.value);
   };
-  const handleAddClick = () => {
-    const data={first_name:formData.firstName,last_name:formData.lastName,phone:formData.phone,
-      mail:formData.email,cityId:formData.city,neighborhood:formData.neighborhood,
-    street:formData.street,identity_number:formData.identityNumber,date_of_birth:formData.dateOfBirth};
-    // TODO: Make an HTTP request to your server endpoint with formData
-    fetch('http://localhost:3600/api/volunteer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the response from the server if needed
-        console.log('Server response:', data);
-      })
-      .catch((error) => {
-        // Handle errors
-        console.log( error);
+
+  const handleAddClick = async () => {
+    const data = {
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      phone: formData.phone,
+      mail: formData.email,
+      cityId: formData.city,
+      neighborhood: formData.neighborhood,
+      street: formData.street,
+      identity_number: formData.identityNumber,
+      date_of_birth: formData.dateOfBirth,
+    };
+
+    if (Object.values(formData).some((value) => value === '')) {
+      setError('Please fill out all fields.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3600/api/volunteer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message);
+        console.error('Server error:', errorData);
+        return;
+      }
+
+      const responseData = await response.json();
+      console.log('Server response:', responseData);
+      setError(null);
+      setIsFormModified(false); // Reset form modification state
+    } catch (error) {
+      setError('An unexpected error occurred.');
+      console.error('Error:', error);
+    }
   };
   return (
     <Box
@@ -68,6 +100,8 @@ export default function CreateVolunteer() {
       autoComplete="off"
     >
       <h1>Volunteer Card</h1>
+      {(err !== null) && <Alert severity="error">{err}</Alert>}
+      {isFormModified && <Button variant="text" onClick={cleanData}>Clean all fields</Button>}
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
