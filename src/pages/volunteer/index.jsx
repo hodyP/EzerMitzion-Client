@@ -1,3 +1,0 @@
-<Details/>
-
-<Shibuzim></Shibuzim>

@@ -36,7 +36,7 @@ export default function SignIn() {
     };
     try {
       await login(userDetails);
-      navigate("/home");
+      navigate("/Alphone");
     } catch (error) {
       setError(error.response.data?.message);
       console.log(err);     

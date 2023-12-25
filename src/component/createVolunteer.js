@@ -41,7 +41,7 @@ export default function CreateVolunteer() {
       mail:formData.email,cityId:formData.city,neighborhood:formData.neighborhood,
     street:formData.street,identity_number:formData.identityNumber,date_of_birth:formData.dateOfBirth};
     // TODO: Make an HTTP request to your server endpoint with formData
-    fetch('https://localhost:3600/api/volunteer', {
+    fetch('http://localhost:3600/api/volunteer', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
