@@ -1,46 +1,71 @@
 import * as React from 'react';
 import { DataGrid,GridToolbar  } from '@mui/x-data-grid';
 import { useState,useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import LinearProgress from '@mui/material/LinearProgress';
 
 import axios from 'axios';
 const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {field: 'phone',headerName: 'Phone', type: 'phone',width: 130},
-  {field: 'city',headerName: 'City', type: 'city',width: 130},
-  {field: 'neighberhood',headerName: 'Neighberhood',width: 180}
+  { field: 'id', headerName: 'מספר', width: 90 },
+  { field: 'first_name', headerName: 'שם פרטי', width: 130 },
+  { field: 'last_name', headerName: 'שם משפחה', width: 150 },
+  { field: 'phone', headerName: 'טלפון', type: 'phone', width: 130 },
+  { field: 'city', headerName: 'עיר', width: 130 },
+  { field: 'neighborhood', headerName: 'שכונה', width: 180 },
 ];
 
 export default function DataTable(props) {
     const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+ 
+  
   useEffect(() => {
-    // Fetch data from the server using an HTTP request.
-    axios.get(props.url)
-      .then((response) => {
+    
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(props.url);
+        
         setData(response.data);
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
+        setError(null);
+      } catch (err) {
+        
+        setError(err.response?.data?.message);
         setLoading(false);
-      });
-  }, [props.url]); // Empty dependency array means this effect runs once on component mount.
+      }
+    };
 
-
- 
-
+    fetchData(); 
+  }, [props.url]);
+  // const handleSelectionModelChange = (selectionModel) => {
+  //   console.log(selectionModel);
+  //   setSelectedRows(selectionModel);
+  // }; 
+  
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 400, width: '100%', direction: 'rtl' }}>
         {loading ? (
-    <p>Loading...</p>
+        <LinearProgress
+        color="secondary"
+ 
+       
+      />
   ) : error ? (
-    <p>Error: {error.message}</p>
+    <p>Error: {error}</p>
   ) : (
+    <>
+   
       <DataGrid
-        rows={data.map((item)=>({id:item.id,lastName:item.last_name,phone:item.phone.toString()
-       , city:"Jerusalem",neighberhood:item.neighborhood}))}
+       dir="rtl"
+      rows={data.map((item) => ({
+        id: item.id,
+        first_name: item.first_name,
+        last_name: item.last_name,
+        phone: item.phone,
+        city: item.city,
+        neighborhood: item.neighborhood,
+      }))}
         columns={columns}
         initialState={{
           pagination: {
@@ -52,8 +77,15 @@ export default function DataTable(props) {
           }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-       
-      />)}
+  
+        onRowSelectionModelChange={(newRowSelectionModel) => {    
+          props.handleSetRowSelectionModel(newRowSelectionModel);
+          
+        }}
+        //rowSelectionModel={rowSelectionModel}
+
+      />  </>)}
     </div>
+  
   );
 }

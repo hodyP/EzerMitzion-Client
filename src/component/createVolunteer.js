@@ -8,8 +8,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
-
+import { useNavigate } from "react-router-dom";
+import MultipleSelectChip from "./addTypeOfVolunteer"
+import { Typography } from '@mui/material';
 export default function CreateVolunteer() {
+  const navigate = useNavigate();
   const initialFormData = {
     firstName: '',
     lastName: '',
@@ -19,13 +22,33 @@ export default function CreateVolunteer() {
     neighborhood: '',
     street: '',
     identityNumber: '',
-    dateOfBirth: '',
+    age: '',
   };
 
   const [formData, setFormData] = React.useState(initialFormData);
   const [isFormModified, setIsFormModified] = React.useState(false);
   const [err, setError] = React.useState(null);
+  const [datatype, setDatatype] = React.useState([]);
+  const [cities, setCities] = React.useState([]);
+  React.useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch('http://localhost:3600/api/city');
+        if (!response.ok) {
+          throw new Error('Failed to fetch cities');
+        }
+        const citiesData = await response.json();
+        setCities(citiesData);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    };
 
+    fetchCities();
+  }, []);
+  const handleAddType = (selectedObjects) => {
+    setDatatype(selectedObjects);
+  }
   const cleanData = () => {
     setFormData(initialFormData);
     setIsFormModified(false);
@@ -46,8 +69,54 @@ export default function CreateVolunteer() {
   const handleTextChange = (field) => (event) => {
     handleFieldChange(field, event.target.value);
   };
+  function calculateDOBFromAge(ageString) {
+    // Parse age string to get the age as a number
+    const age = parseInt(ageString, 10);
 
-  const handleAddClick = async () => {
+    // Get the current date
+    const currentDate = new Date();
+
+    // Calculate the birth year
+    const birthYear = currentDate.getFullYear() - age;
+
+    // Create a new Date object with the calculated birth year
+    const dateOfBirth = new Date(birthYear, 0, 1); // Assuming January 1 for simplicity
+
+    return dateOfBirth.toISOString().split('T')[0];
+  }
+  const addVolunteerTypes = (id) => {
+    datatype.forEach(async (t) => {
+      console.log(t);
+      const newType = { volunteerId: id, type_of_volunteerId: t }
+      try {
+        const res = await fetch('http://localhost:3600/api/volunteer_details', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newType),
+        });
+        if (!res.ok) {
+          const errorData = await res.json();
+          setError(errorData.message);
+          console.error('Server error:', errorData);
+          return;
+        }
+        const responseData = await res.json();
+        console.log('Server response:', responseData);
+
+        setError(null);
+        setIsFormModified(false); // Reset form modification state
+        navigate('/Alphone');
+        return responseData;
+      } catch (error) {
+        setError('An unexpected error occurred.');
+        console.error('Error:', error);
+      }
+    }
+    )
+  }
+  const addVolunteer = async () => {
     const data = {
       first_name: formData.firstName,
       last_name: formData.lastName,
@@ -57,14 +126,14 @@ export default function CreateVolunteer() {
       neighborhood: formData.neighborhood,
       street: formData.street,
       identity_number: formData.identityNumber,
-      date_of_birth: formData.dateOfBirth,
+      date_of_birth: calculateDOBFromAge(formData.age),
     };
 
-    if (Object.values(formData).some((value) => value === '')) {
-      setError('Please fill out all fields.');
-      return;
-    }
-
+    // if (Object.values(formData).some((value) => value === '')) {
+    //   setError('Please fill out all fields.');
+    //   return;
+    // }
+    console.log(datatype);
     try {
       const response = await fetch('http://localhost:3600/api/volunteer', {
         method: 'POST',
@@ -80,33 +149,52 @@ export default function CreateVolunteer() {
         console.error('Server error:', errorData);
         return;
       }
-
       const responseData = await response.json();
       console.log('Server response:', responseData);
+
       setError(null);
       setIsFormModified(false); // Reset form modification state
+      return responseData;
     } catch (error) {
       setError('An unexpected error occurred.');
       console.error('Error:', error);
     }
+  }
+  const handleAddClick = async () => {
+    try {
+      const volunteer = addVolunteer();
+      if (volunteer) {
+        addVolunteerTypes(volunteer.id);
+        navigate("/Alphone");
+      }
+    }
+    catch (error) {
+      console.error('Error adding volunteerDetails:', error);
+    }
   };
   return (
     <Box
+    dir="rtl" 
       component="form"
+      onSubmit={(e) => {
+        e.preventDefault(); // Prevent default form submission
+        handleAddClick(); // Call your logic here
+      }}
       sx={{
         '& .MuiTextField-root': { m: 1, width: '100%' },
       }}
       noValidate
       autoComplete="off"
     >
-      <h1>Volunteer Card</h1>
+      <Typography variant="h4">הוספת מתנדבת</Typography>
       {(err !== null) && <Alert severity="error">{err}</Alert>}
       {isFormModified && <Button variant="text" onClick={cleanData}>Clean all fields</Button>}
+      <MultipleSelectChip onDataTypeChange={handleAddType}></MultipleSelectChip>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="First Name"
+            label="שם פרטי"
             variant="outlined"
             value={formData.firstName}
             onChange={handleTextChange('firstName')}
@@ -115,7 +203,7 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Last Name"
+            label="שם משפחה"
             variant="outlined"
             value={formData.lastName}
             onChange={handleTextChange('lastName')}
@@ -124,7 +212,7 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Phone"
+            label="טלפון"
             variant="outlined"
             value={formData.phone}
             onChange={handleTextChange('phone')}
@@ -133,31 +221,33 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="email"
-            label="Email"
+            label="מייל"
             variant="outlined"
             value={formData.email}
             onChange={handleTextChange('email')}
           />
         </Grid>
         <Grid item xs={6}>
-          <InputLabel id="city-label">City</InputLabel>
+          <InputLabel id="city-label">עיר</InputLabel>
           <Select
             labelId="city-label"
             id="city"
-            label="City"
+            label="עיר"
             value={formData.city}
             onChange={handleCityChange}
             sx={{ width: '100%' }}
           >
-            <MenuItem  value="1">Jerusalem</MenuItem>
-            <MenuItem  value="2">bnei-Brak</MenuItem>
-            <MenuItem  value="3">city 3</MenuItem>
+            {cities.map((city) => (
+              <MenuItem key={city.id} value={city.id}>
+                {city.name}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Neighborhood"
+            label="שכונה"
             variant="outlined"
             value={formData.neighborhood}
             onChange={handleTextChange('neighborhood')}
@@ -166,7 +256,7 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Street"
+            label="רחוב"
             variant="outlined"
             value={formData.street}
             onChange={handleTextChange('street')}
@@ -175,7 +265,7 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Identity Number"
+            label="תעודת זהות"
             variant="outlined"
             value={formData.identityNumber}
             onChange={handleTextChange('identityNumber')}
@@ -184,17 +274,16 @@ export default function CreateVolunteer() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Date of Birth"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={formData.dateOfBirth}
-            onChange={handleTextChange('dateOfBirth')}
+            label="גיל"
+            type='number'
+            value={formData.age}
+            onChange={handleTextChange('age')}
           />
         </Grid>
       </Grid>
       <Stack spacing={2} direction="row">
-        <Button variant="outlined" onClick={handleAddClick}>Add</Button>
-        <Button variant="outlined">Cancel</Button>
+        <Button variant="outlined" type="submit">הוספה</Button>
+        <Button variant="outlined" onClick={() => { navigate('../Alphone') }}>ביטול</Button>
       </Stack>
     </Box>
   );

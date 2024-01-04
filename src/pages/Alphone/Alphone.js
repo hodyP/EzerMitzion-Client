@@ -5,8 +5,10 @@ import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DataTable from '../../component/dataGrid';
-import CreateVolunteer from '../../component/createVolunteer'
+
+import { useNavigate } from 'react-router-dom';
 function samePageLinkNavigation(event) {
+
   if (
     event.defaultPrevented ||
     event.button !== 0 || // ignore everything but left-click
@@ -36,9 +38,26 @@ function LinkTab(props) {
 }
 
 export default function Alphone() {
+  const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
   const [ShowNeedy, setShowNeedy] = React.useState(true);
-  const [showAddVolunteer, setShowAddVolunteer] = React.useState(false);
+  const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
+  const handleSetRowSelectionModel = (newRow) => {
+    setRowSelectionModel(newRow);
+  }
+
+  const handleNavigate = () => {
+    if ((rowSelectionModel.length === 1)) {
+      if (ShowNeedy) {
+        navigate(`/needy/${rowSelectionModel[0]}`);
+      } else {
+        navigate(`/volunteer/${rowSelectionModel[0]}`);
+      }}
+    else {
+      console.error('Select exactly one row to navigate');
+    }
+
+  };
   const handleChange = (event, newValue) => {
     // event.type can be equal to focus with selectionFollowsFocus.
     if (
@@ -55,26 +74,41 @@ export default function Alphone() {
       }
     }
   };
-  const handleAddVolunteerClick = () => {
-    setShowAddVolunteer(true); 
-  };
+  const handlenavigateVolunteer = () => {
+    navigate('/volunteer/add');
+  }
+  const handlenavigateFamily = () => {
+    navigate('/needy/add');
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
 
-      <h1>אלפון</h1>  <Button variant="outlined" startIcon={<AddIcon />} onClick={handleAddVolunteerClick}>
-        add Volunteer
-      </Button>
-{!showAddVolunteer?
-     ( <Tabs value={value} onChange={handleChange} aria-label="nav tabs example">
+      <h1>אלפון</h1>
+      {(ShowNeedy) ? (
+        <> <Button variant="outlined" startIcon={<AddIcon />} onClick={handlenavigateFamily}>
+          הוספת משפחה
+        </Button>
+          {(rowSelectionModel.length > 0) ? <Button variant="outlined" onClick={handleNavigate}>לדף משפחה</Button> : null}
+        </>) : (
+        <>
+          <Button variant="outlined" startIcon={<AddIcon />} onClick={handlenavigateVolunteer}>
+            הוספת מתנדבת
+          </Button>
+          {(rowSelectionModel.length > 0) ?
+            <Button variant="outlined" onClick={handleNavigate}>לדף מתנדבת</Button>
+            : null
+          }
+        </>)}
+      <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
         <LinkTab label="משפחות" href="/Needies" />
         <LinkTab label="מתנדבות" href="/Volunteers" />
-      </Tabs>): (<CreateVolunteer></CreateVolunteer>)
-}
-      {(ShowNeedy&&!showAddVolunteer )? (
-        <DataTable url={'http://localhost:3600/api/needy'} />
-      )  : (
-        <DataTable url={'http://localhost:3600/api/volunteer'} />
+      </Tabs>
+
+      {(ShowNeedy) ? (
+        <DataTable dir="rtl" url={'http://localhost:3600/api/needy'} handleSetRowSelectionModel={handleSetRowSelectionModel} />
+      ) : (
+        <DataTable  dir="rtl" url={'http://localhost:3600/api/volunteer'} handleSetRowSelectionModel={handleSetRowSelectionModel} />
       )}
     </Box>
   );
