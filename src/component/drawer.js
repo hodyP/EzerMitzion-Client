@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useContext } from 'react';
+import { UserContext } from '../context/userContext'
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -6,52 +8,106 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
+
+import { List, Link } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
-import Alphone from '../pages/Alphone/Alphone';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LogoutIcon from '@mui/icons-material/Logout';
+
+// import './App.css';
+
+import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
+import Register from '../pages/register/register';
+import SignIn from "../pages/login/SignIn";
+
+import Logout from "../pages/login/SignOut";
+
+import Alphone from "../pages/Alphone/Alphone";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import CreateVolunteer from "../component/createVolunteer";
+import CreateNeedy from "../component/createFamily";
+import VolunteerDetails from "../pages/volunteer/volunteerDetails";
+import NeedyDetails from "../pages/needy/needy";
+import Shibuz from '../pages/shibuz/shibuz';
+import Time from './time';
+
+
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
+  const { currentUser, login, logout } = useContext(UserContext);
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleDrawerToggle = () => {
+const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
     <div>
       <Toolbar />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '20vh', // Set the height of the container as needed
+        }}
+      >
+        <img
+          src="/1200px-EzerMezion.svg.png"
+          alt="logo"
+          style={{
+            width: 'auto',
+            height: '100px',
+          }}
+        />
+        
+        
+      </Box >
+      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold'}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
+
+      <Time></Time>
       <Divider />
-      <List>
-        {['Alphone', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
+      <List dir="rtl" >
+        {[{ text: 'אלפון', icon: <ContactPhoneIcon />, to: "/Alphone" },
+        { text: 'אירועים זמניים', icon: <CalendarMonthIcon />, to: "/events" },
+        { text: 'הגדרות', icon: <SettingsIcon />, to: "/settings" },
+        { text: 'עדכונים', icon: <NotificationsActiveIcon />, to: "/alerts" }
+        ].map((obj, index) => (
+          <ListItem  key={obj.text} disablePadding>
+            <ListItemButton component={Link} to={obj.to}>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <ContactPhoneIcon />}
+                {obj.icon}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText style={{ textAlign: 'center' }} primary={obj.text} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
       <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+ <br></br>
+     
+     
+      <List >
+        {["יציאה"].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton>
+            <ListItemButton component={Link} to="/logout">
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <LogoutIcon />
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>
@@ -70,10 +126,11 @@ function ResponsiveDrawer(props) {
         position="fixed"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          mr: { sm: `${drawerWidth}px` },
+
         }}
       >
-        <Toolbar>
+        <Toolbar dir="rtl">
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -84,47 +141,80 @@ function ResponsiveDrawer(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            EzerMitzion
+            עזר מציון
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box
+      {/* <Box
         component="nav"
+       
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
+      > */}
+      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+      <Drawer
+        container={container}
+        variant="temporary"
+        open={mobileOpen}
+        anchor='right'
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        {/* <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer> */}
-      </Box>
+        {drawer}
+      </Drawer>
+      <Drawer
+        anchor='right'
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+        open
+      >
+        {drawer}
+      </Drawer>
+      {/* </Box> */}
       <Box
+
+        dir="ltr"
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginLeft: 0,
+          marginRight: drawerWidth,
+          marginTop: 6,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-end',
+          // הוספת סגנון ישירות לאלמנט
+          "& > div": {
+            marginLeft: 0,
+            marginRight: drawerWidth,
+          }
+        }}
       >
-        {/* <Alphone/> */}
+
+        <Routes>
+          <Route path="/" element={<Alphone />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/Alphone" element={<Alphone />} />
+          <Route path="/volunteer/add" element={<CreateVolunteer />} />
+          <Route path="/needy/add" element={<CreateNeedy />} />
+          <Route path="/volunteer/:id" element={<VolunteerDetails />} />
+          <Route path="/needy/:id" element={<NeedyDetails />} />
+          <Route path="/needy/:id/shibuz/:id/:city/:neighborhood/:type/:day/:partInDay" element={<Shibuz />}/>
+        </Routes>
       </Box>
     </Box>
   );

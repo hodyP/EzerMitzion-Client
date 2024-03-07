@@ -5,13 +5,19 @@ import List from '@mui/material/List';
 import RequestCard from './request_card';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import { Button } from '@mui/material';
+import CreateRequest from '../../component/createRequest';
 function Needy_requests(props) {
     const [value, setValue] = useState(0);
     const [showRequests, setShowRequests] = useState(true);
     const [needyRequests, setNeedyRequests] = useState([]);
+    const [needyHistory, setNeedyHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+   
     useEffect(() => {
         fetchNeedyRequests();
+        fetchNeedyHistory();
     }
 
         , [])
@@ -73,36 +79,61 @@ function Needy_requests(props) {
         }
 
     };
+    const fetchNeedyHistory = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3600/api/needy_request/needy/${props.id}/history`);
+            console.log(response.data);
+            setNeedyHistory(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching needy requests:', error);
+            setLoading(false);
+        }
+    };
     return (
         <>
-            <Tabs   dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
+            <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
                 <LinkTab label="סטטוס שיבוץ" href="/requests" />
                 <LinkTab label="היסטוריה" href="/Requests" />
+                <div style={{ marginLeft: 6, marginRight: 'auto', display: 'flex', alignItems: 'center' }}>
+                    {/* <Button variant="contained" size="small" onClick={()=>{props.createRequestfunc()}}>
+                       הוספת בקשה
+                    </Button> */}
+                    <CreateRequest createRequestfunc={props.createRequestfunc}></CreateRequest>
+                </div>
             </Tabs>
             <List
-      sx={{
-        width: '100%',   
-    height: '100%',
-        bgcolor: 'background.paper',
-        position: 'relative',
-        overflow: 'auto',
-        maxHeight: 500,
-        '& ul': { padding: 0 },
-      }}
-      
-    >
+                sx={{
+                    width: '100%',
+                    height: '100%',
+                    bgcolor: 'background.paper',
+                    position: 'relative',
+                    overflow: 'auto',
+                    maxHeight: 500,
+                    '& ul': { padding: 0 },
+                }}
+
+            >
                 {showRequests ? (
                     <>
                         {loading ? (
                             <Typography>Loading...</Typography>
                         ) : (
                             needyRequests.map(needyRequest => (
-                                <RequestCard  key={needyRequest.id} needyRequest={needyRequest}></RequestCard>
+                                <RequestCard key={needyRequest.id} ask={props.ask} needyRequest={needyRequest} needy={props.needy}></RequestCard>
                             ))
                         )}
                     </>
                 ) : (
-                    <Typography>היסטוריה</Typography>
+                    <>
+                        {loading ? (
+                            <Typography>Loading...</Typography>
+                        ) : (
+                            needyHistory.map(needyRequest => (
+                                <RequestCard key={needyRequest.id} ask={props.ask} needyRequest={needyRequest} needy={props.needy}></RequestCard>
+                            ))
+                        )}
+                    </>
                 )}
             </List>
         </>

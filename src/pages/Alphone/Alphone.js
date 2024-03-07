@@ -38,6 +38,7 @@ function LinkTab(props) {
 }
 
 export default function Alphone() {
+  console.log("Alphone component is rendering");
   const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
   const [ShowNeedy, setShowNeedy] = React.useState(true);
@@ -52,7 +53,8 @@ export default function Alphone() {
         navigate(`/needy/${rowSelectionModel[0]}`);
       } else {
         navigate(`/volunteer/${rowSelectionModel[0]}`);
-      }}
+      }
+    }
     else {
       console.error('Select exactly one row to navigate');
     }
@@ -84,18 +86,18 @@ export default function Alphone() {
   return (
     <Box sx={{ width: '100%' }}>
 
-      <h1>אלפון</h1>
+    
       {(ShowNeedy) ? (
         <> <Button variant="outlined" startIcon={<AddIcon />} onClick={handlenavigateFamily}>
           הוספת משפחה
         </Button>
-          {(rowSelectionModel.length > 0) ? <Button variant="outlined" onClick={handleNavigate}>לדף משפחה</Button> : null}
+          {(rowSelectionModel.length ===1) ? <Button variant="outlined" onClick={handleNavigate}>לדף משפחה</Button> : null}
         </>) : (
         <>
           <Button variant="outlined" startIcon={<AddIcon />} onClick={handlenavigateVolunteer}>
             הוספת מתנדבת
           </Button>
-          {(rowSelectionModel.length > 0) ?
+          {(rowSelectionModel.length ===1) ?
             <Button variant="outlined" onClick={handleNavigate}>לדף מתנדבת</Button>
             : null
           }
@@ -108,7 +110,7 @@ export default function Alphone() {
       {(ShowNeedy) ? (
         <DataTable dir="rtl" url={'http://localhost:3600/api/needy'} handleSetRowSelectionModel={handleSetRowSelectionModel} />
       ) : (
-        <DataTable  dir="rtl" url={'http://localhost:3600/api/volunteer'} handleSetRowSelectionModel={handleSetRowSelectionModel} />
+        <DataTable dir="rtl" url={'http://localhost:3600/api/volunteer'} handleSetRowSelectionModel={handleSetRowSelectionModel} />
       )}
     </Box>
   );

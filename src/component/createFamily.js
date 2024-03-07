@@ -9,6 +9,8 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
+import { Typography ,FormControl} from '@mui/material';
+
 
 export default function CreateNeedy() {
   const navigate = useNavigate();
@@ -120,35 +122,45 @@ export default function CreateNeedy() {
     }
   };
   return (
+    
     <Box
+    sx={{ width: '100%' }}
+    dir="rtl"
       component="form"
       onSubmit={(e) => {
         e.preventDefault(); // Prevent default form submission
         handleAddClick(); // Call your logic here
       }}
-      sx={{
-        '& .MuiTextField-root': { m: 1, width: '100%' },
-      }}
+      // sx={{
+      //   boxSizing: 'border-box',
+      //   '& .MuiTextField-root': { m: 1, width: '100%' },
+      //   width: '100%',
+      //   '@media (min-width: 600px)': {
+      //     width: '1000px',
+      //   },
+      // }}
       noValidate
-      autoComplete="off"
+      autoComplete="on"
     >
-      <h1>Family Card</h1>
+     
+     <Typography>הוספת משפחה</Typography>
       {(err !== null) && <Alert severity="error">{err}</Alert>}
-      {isFormModified && <Button variant="text" onClick={cleanData}>Clean all fields</Button>}
+      {isFormModified && <Button variant="text" onClick={cleanData}>ניקוי כל השדות</Button>}
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="First Name"
+            label="שם פרטי*"
             variant="outlined"
             value={formData.firstName}
             onChange={handleTextChange('firstName')}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <TextField
+            required
             id="outlined-required"
-            label="Last Name"
+            label="שם משפחה*"
             variant="outlined"
             value={formData.lastName}
             onChange={handleTextChange('lastName')}
@@ -156,8 +168,9 @@ export default function CreateNeedy() {
         </Grid>
         <Grid item xs={6}>
           <TextField
+          required
             id="outlined-required"
-            label="Phone"
+            label="טלפון*"
             variant="outlined"
             value={formData.phone}
             onChange={handleTextChange('phone')}
@@ -166,7 +179,7 @@ export default function CreateNeedy() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Phone_2"
+            label="טלפון 2"
             variant="outlined"
             value={formData.phone_2}
             onChange={handleTextChange('phone_2')}
@@ -175,18 +188,21 @@ export default function CreateNeedy() {
         <Grid item xs={6}>
           <TextField
             id="email"
-            label="Email"
+            label="מייל"
+            type="email"
             variant="outlined"
             value={formData.email}
             onChange={handleTextChange('email')}
           />
         </Grid>
         <Grid item xs={6}>
-          <InputLabel id="city-label">City</InputLabel>
+          <FormControl fullWidth>
+          <InputLabel id="city-label">עיר*</InputLabel>
           <Select
+          required
             labelId="city-label"
             id="city"
-            label="City"
+            label="עיר*"
             value={formData.city}
             onChange={handleCityChange}
             sx={{ width: '100%' }}
@@ -197,26 +213,32 @@ export default function CreateNeedy() {
               </MenuItem>
             ))}
           </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={6}>
-          <InputLabel id="remaind_time-label">remaind_time</InputLabel>
+          <FormControl fullWidth>
+          <InputLabel id="remaind_time-label">*תכיפות לתזכורת</InputLabel>
           <Select
+          required
             labelId="remaind_time-label"
             id="remaind_time"
-            label="Remaind_time"
+            label="*תכיפות לתזכורת"
             value={formData.remaind_time}
             onChange={handleRemind_timeChange}
             sx={{ width: '100%' }}
           >
+            
             <MenuItem  value="יום">יום</MenuItem>
             <MenuItem  value="שבוע">שבוע</MenuItem>
             <MenuItem  value="חודש">חודש</MenuItem>
           </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={6}>
           <TextField
+          required
             id="outlined-required"
-            label="Neighborhood"
+            label="שכונה*"
             variant="outlined"
             value={formData.neighborhood}
             onChange={handleTextChange('neighborhood')}
@@ -224,8 +246,9 @@ export default function CreateNeedy() {
         </Grid>
         <Grid item xs={6}>
           <TextField
+          required
             id="outlined-required"
-            label="Street"
+            label="רחוב*"
             variant="outlined"
             value={formData.street}
             onChange={handleTextChange('street')}
@@ -234,7 +257,7 @@ export default function CreateNeedy() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="Identity Number"
+            label="מספר ת.ז"
             variant="outlined"
             value={formData.identityNumber}
             onChange={handleTextChange('identityNumber')}
@@ -243,17 +266,19 @@ export default function CreateNeedy() {
         <Grid item xs={6}>
           <TextField
             id="outlined-required"
-            label="description"
+            label="הערה"
             variant='outlined'
             value={formData.description}
             onChange={handleTextChange('description')}
           />
         </Grid>
       </Grid>
-      <Stack spacing={2} direction="row">
-        <Button variant="outlined" type="submit">Add</Button>
-        <Button variant="outlined" onClick={()=>{navigate('../Alphone')}}>Cancel</Button>
+      <Stack spacing={6} direction="row">
+        <Button variant="outlined" type="submit">הוספה</Button>
+        <Button variant="outlined" onClick={()=>{navigate('../Alphone')}}>ביטול</Button>
       </Stack>
+     
     </Box>
+    
   );
 }

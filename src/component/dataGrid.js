@@ -21,41 +21,28 @@ export default function DataTable(props) {
  
   
   useEffect(() => {
-    
     const fetchData = async () => {
       try {
-        const response = await axios.get(props.url);
-        
+        const response = await axios.get(props.url); 
         setData(response.data);
         setLoading(false);
         setError(null);
-      } catch (err) {
-        
+      } catch (err) {      
         setError(err.response?.data?.message);
         setLoading(false);
       }
     };
-
     fetchData(); 
   }, [props.url]);
-  // const handleSelectionModelChange = (selectionModel) => {
-  //   console.log(selectionModel);
-  //   setSelectedRows(selectionModel);
-  // }; 
-  
+ 
   return (
     <div style={{ height: 400, width: '100%', direction: 'rtl' }}>
         {loading ? (
-        <LinearProgress
-        color="secondary"
- 
-       
-      />
+        <LinearProgress color="secondary"/>
   ) : error ? (
     <p>Error: {error}</p>
   ) : (
     <>
-   
       <DataGrid
        dir="rtl"
       rows={data.map((item) => ({
@@ -82,8 +69,6 @@ export default function DataTable(props) {
           props.handleSetRowSelectionModel(newRowSelectionModel);
           
         }}
-        //rowSelectionModel={rowSelectionModel}
-
       />  </>)}
     </div>
   

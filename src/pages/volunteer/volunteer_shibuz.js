@@ -9,9 +9,11 @@ function Volunteer_shibuz(props) {
     const [value, setValue] = useState(0);
     const [showRequests, setShowRequests] = useState(true);
     const [needyRequests, setNeedyRequests] = useState([]);
+    const [needyHistory,setNeedyHistory]=useState([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         fetchNeedyRequests();
+        fetchNeedyHistory ();
     }
 
         , [])
@@ -70,39 +72,57 @@ function Volunteer_shibuz(props) {
         } catch (error) {
             console.error('Error fetching needy requests:', error);
             setLoading(false);
-        }
-
+        }      
+    };
+    const fetchNeedyHistory = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3600/api/needy_request/volunteer/${props.id}/history`);
+            console.log(response.data);
+            setNeedyHistory(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching needy requests:', error);
+            setLoading(false);
+        }      
     };
     return (
         <>
-            <Tabs   dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
+            <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
                 <LinkTab label="סטטוס שיבוץ" href="/requests" />
                 <LinkTab label="היסטוריה" href="/Requests" />
             </Tabs>
             <List
-      sx={{
-        width: '100%',   
-    height: '100%',
-        bgcolor: 'background.paper',
-        position: 'relative',
-        overflow: 'auto',
-        maxHeight: 500,
-        '& ul': { padding: 0 },
-      }}
-      
-    >
+                sx={{
+                    width: '100%',
+                    height: '100%',
+                    bgcolor: 'background.paper',
+                    position: 'relative',
+                    overflow: 'auto',
+                    maxHeight: 500,
+                    '& ul': { padding: 0 },
+                }}
+
+            >
                 {showRequests ? (
                     <>
                         {loading ? (
                             <Typography>Loading...</Typography>
                         ) : (
                             needyRequests.map(needyRequest => (
-                                <RequestCard  key={needyRequest.id} needyRequest={needyRequest}></RequestCard>
+                                <RequestCard needy={props.data} key={needyRequest.id} ask={"volunteer"} needyRequest={needyRequest}></RequestCard>
                             ))
                         )}
                     </>
                 ) : (
-                    <Typography>היסטוריה</Typography>
+                    <>
+                    {loading ? (
+                        <Typography>Loading...</Typography>
+                    ) : (
+                        needyHistory.map(needyRequest => (
+                            <RequestCard needy={props.data} key={needyRequest.id} ask={"volunteer"} needyRequest={needyRequest}></RequestCard>
+                        ))
+                    )}
+                </>
                 )}
             </List>
         </>

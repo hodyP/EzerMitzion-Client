@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['אלפון', 'ארועים זמניים', 'עדכונים','הגדרות'];
+const pages = ['אלפון', 'ארועים זמניים', 'עדכונים', 'הגדרות'];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'יציאה'];
 
@@ -23,8 +23,8 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const navigate=useNavigate();
-  
+  const navigate = useNavigate();
+
   const handleNavigateClick = (page) => {
     // Navigate to the corresponding URL when a page is clicked
     // navigate(`/${}`);
@@ -46,37 +46,39 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  return (  
+  return (
     <AppBar position="static" dir="rtl">
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-        <img
-  src="/1200px-EzerMezion.svg.png"
-  alt="logo"
-  style={{ display: { xs: 'none', md: 'flex' }, marginRight: '8px', width: 'auto',
-  height: '50px', }}
-/>
+          <img
+            src="/1200px-EzerMezion.svg.png"
+            alt="logo"
+            style={{
+              display: { xs: 'none', md: 'flex' }, marginRight: '8px', width: 'auto',
+              height: '50px',
+            }}
+          />
           <Typography
-          dir="rtl"
+            dir="rtl"
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-             
+
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-              
+
             }}
           >
             עזר מציון
           </Typography>
 
-          <Box textAlign="center"  sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box textAlign="center" sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -102,13 +104,13 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: 'block', md: 'none' }
               }}
             >
-              {pages.map((page,index) => (
-                <MenuItem  key={index} onClick={()=>{
-                  console.log(index);}}>
-                  
+              {pages.map((page, index) => (
+                <MenuItem onClick={(index, page) => {
+                  console.log(page);
+                }}>
                   <Typography textAlign="center" >{page}</Typography>
                 </MenuItem>
               ))}
@@ -116,7 +118,7 @@ function ResponsiveAppBar() {
           </Box>
           {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
           <Typography
-          dir="rtl"
+
             variant="h5"
             noWrap
             component="a"
@@ -125,7 +127,6 @@ function ResponsiveAppBar() {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-             
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
@@ -178,7 +179,7 @@ function ResponsiveAppBar() {
         </Toolbar>
       </Container>
     </AppBar>
-    
+
   );
 }
 export default ResponsiveAppBar;

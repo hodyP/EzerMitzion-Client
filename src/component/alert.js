@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction="down" ref={ref} {...props} />;
 });
 
 export default function AlertDialogSlide(props) {
@@ -25,27 +25,7 @@ export default function AlertDialogSlide(props) {
     };
     const handleSubmit = async () => {
         setOpen(false);
-        try {
-            const res = await fetch(`http://localhost:3600/api/volunteer/${props.id}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!res.ok) {
-                const errorData = await res.json();
-               
-                console.error('Server error:', errorData);
-                return;
-            }
-            const responseData = await res.json();
-            console.log('Server response:', responseData);          
-            navigate('/Alphone');
-            return responseData;
-        } catch (error) {
-            
-            console.error('Error:', error);
-        }
+        props.fetchfunc();
     }
 
    

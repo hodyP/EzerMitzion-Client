@@ -10,7 +10,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
 import MultipleSelectChip from "./addTypeOfVolunteer"
-import { Typography } from '@mui/material';
+import { FormControl, Typography } from '@mui/material';
 export default function CreateVolunteer() {
   const navigate = useNavigate();
   const initialFormData = {
@@ -162,7 +162,8 @@ export default function CreateVolunteer() {
   }
   const handleAddClick = async () => {
     try {
-      const volunteer = addVolunteer();
+      console.log("in function handleAddClick")
+      const volunteer =await addVolunteer();
       if (volunteer) {
         addVolunteerTypes(volunteer.id);
         navigate("/Alphone");
@@ -175,20 +176,21 @@ export default function CreateVolunteer() {
   return (
     <Box
     dir="rtl" 
-      component="form"
+    component="form"
       onSubmit={(e) => {
-        e.preventDefault(); // Prevent default form submission
-        handleAddClick(); // Call your logic here
+        e.preventDefault(); 
+        handleAddClick(); 
       }}
       sx={{
         '& .MuiTextField-root': { m: 1, width: '100%' },
       }}
       noValidate
-      autoComplete="off"
+      autoComplete="on"
     >
+
       <Typography variant="h4">הוספת מתנדבת</Typography>
       {(err !== null) && <Alert severity="error">{err}</Alert>}
-      {isFormModified && <Button variant="text" onClick={cleanData}>Clean all fields</Button>}
+      {isFormModified && <Button variant="text" onClick={cleanData}>ניקוי כל השדות</Button>}
       <MultipleSelectChip onDataTypeChange={handleAddType}></MultipleSelectChip>
       <Grid container spacing={2}>
         <Grid item xs={6}>
@@ -222,17 +224,19 @@ export default function CreateVolunteer() {
           <TextField
             id="email"
             label="מייל"
+            type="email"
             variant="outlined"
             value={formData.email}
             onChange={handleTextChange('email')}
           />
         </Grid>
         <Grid item xs={6}>
+        <FormControl fullWidth>
           <InputLabel id="city-label">עיר</InputLabel>
           <Select
             labelId="city-label"
             id="city"
-            label="עיר"
+           
             value={formData.city}
             onChange={handleCityChange}
             sx={{ width: '100%' }}
@@ -243,6 +247,7 @@ export default function CreateVolunteer() {
               </MenuItem>
             ))}
           </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={6}>
           <TextField
@@ -285,6 +290,7 @@ export default function CreateVolunteer() {
         <Button variant="outlined" type="submit">הוספה</Button>
         <Button variant="outlined" onClick={() => { navigate('../Alphone') }}>ביטול</Button>
       </Stack>
+     
     </Box>
   );
 }

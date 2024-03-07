@@ -13,9 +13,9 @@ import CreateVolunteer from "./component/createVolunteer";
 import CreateNeedy from "./component/createFamily";
 import VolunteerDetails from "./pages/volunteer/volunteerDetails";
 import NeedyDetails from "./pages/needy/needy";
-
+import CssBaseline from '@mui/material/CssBaseline';
 const theme = createTheme({
-  direction:"rtl",
+  direction:"ltr",
   palette: {
     primary: {
       main: "#FF0909",
@@ -32,25 +32,43 @@ const theme = createTheme({
 function App() {
   return (
     <UserContextProvider>
-    <Router>
-    <ThemeProvider theme={theme}>
-        <ResponsiveAppBar/>
-        {/* <ResponsiveDrawer/> */}
-      <Routes>
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/logout" element={<Logout/>} />
-        <Route path="/register" element={<Register/>} />
-        <Route path="/Alphone" element={<Alphone/>}/>
-        <Route path="/volunteer/add" element={<CreateVolunteer/>}/>
-        <Route path="/needy/add" element={<CreateNeedy/>}/>
-        <Route path="/volunteer/:id" element={<VolunteerDetails/>}></Route>
-        <Route path="/needy/:id" element={<NeedyDetails ></NeedyDetails>}></Route>
-        
-
-      </Routes>
+    {/* <Router>
+      <ThemeProvider theme={theme}>
+        <ResponsiveDrawer/>
+          <Routes>
+            <Route path="/" element={<Alphone />} />
+            <Route path="/login" element={<SignIn />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/Alphone" element={<Alphone />} />
+            <Route path="/volunteer/add" element={<CreateVolunteer />} />
+            <Route path="/needy/add" element={<CreateNeedy />} />
+            <Route path="/volunteer/:id" element={<VolunteerDetails />} />
+            <Route path="/needy/:id" element={<NeedyDetails />} />
+          </Routes>
+       
       </ThemeProvider>
-    </Router>
-    </UserContextProvider>
+    </Router> */}
+    <Router>
+  <ThemeProvider theme={theme}>
+  
+    <ResponsiveDrawer>
+      {/* Routes for navigation */}
+      {/* <Routes>
+        <Route path="/" element={<Alphone />} />
+        <Route path="/login" element={<SignIn />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/Alphone" element={<Alphone />} />
+        <Route path="/volunteer/add" element={<CreateVolunteer />} />
+        <Route path="/needy/add" element={<CreateNeedy />} />
+        <Route path="/volunteer/:id" element={<VolunteerDetails />} />
+        <Route path="/needy/:id" element={<NeedyDetails />} />
+      </Routes> */}
+    </ResponsiveDrawer>
+  </ThemeProvider>
+</Router>
+  </UserContextProvider>
   );
 }
 export default App;
