@@ -8,13 +8,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-
 import { List, Link } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -23,26 +21,20 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LogoutIcon from '@mui/icons-material/Logout';
-
-// import './App.css';
-
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import Register from '../pages/register/register';
 import SignIn from "../pages/login/SignIn";
-
 import Logout from "../pages/login/SignOut";
-
 import Alphone from "../pages/Alphone/Alphone";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-
 import CreateVolunteer from "../component/createVolunteer";
 import CreateNeedy from "../component/createFamily";
 import VolunteerDetails from "../pages/volunteer/volunteerDetails";
 import NeedyDetails from "../pages/needy/needy";
 import Shibuz from '../pages/shibuz/shibuz';
 import Time from './time';
-
-
+import Reminder from '../pages/Reminders/Reminder';
+import IndexReminder from '../pages/Reminders/indexReminder';
 
 const drawerWidth = 240;
 
@@ -56,7 +48,7 @@ const handleDrawerToggle = () => {
   };
 
   const drawer = (
-    <div>
+    <div style={{ backgroundColor:"#f1edff" ,minHeight: '100vh',  }}>
       <Toolbar />
       <Box
         sx={{
@@ -65,6 +57,7 @@ const handleDrawerToggle = () => {
           justifyContent: 'center',
           alignItems: 'center',
           height: '20vh', // Set the height of the container as needed
+          
         }}
       >
         <img
@@ -78,7 +71,7 @@ const handleDrawerToggle = () => {
         
         
       </Box >
-      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold'}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
+      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,backgroundColor:"#dde4ed"}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
 
       <Time></Time>
       <Divider />
@@ -86,7 +79,7 @@ const handleDrawerToggle = () => {
         {[{ text: 'אלפון', icon: <ContactPhoneIcon />, to: "/Alphone" },
         { text: 'אירועים זמניים', icon: <CalendarMonthIcon />, to: "/events" },
         { text: 'הגדרות', icon: <SettingsIcon />, to: "/settings" },
-        { text: 'עדכונים', icon: <NotificationsActiveIcon />, to: "/alerts" }
+        { text: 'עדכונים', icon: <NotificationsActiveIcon />, to: "/Updates" }
         ].map((obj, index) => (
           <ListItem  key={obj.text} disablePadding>
             <ListItemButton component={Link} to={obj.to}>
@@ -102,7 +95,7 @@ const handleDrawerToggle = () => {
  <br></br>
      
      
-      <List >
+      <List style={{ textAlign: 'center' ,fontWeight: 'bold' }}>
         {["יציאה"].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to="/logout">
@@ -127,10 +120,10 @@ const handleDrawerToggle = () => {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           mr: { sm: `${drawerWidth}px` },
-
+            
         }}
       >
-        <Toolbar dir="rtl">
+        <Toolbar dir="rtl" backgroundColor="#f0e9ff">
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -188,7 +181,7 @@ const handleDrawerToggle = () => {
           flexGrow: 1,
           p: 3,
           marginLeft: 0,
-          marginRight: drawerWidth,
+          marginRight: 50,
           marginTop: 6,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           display: 'flex',
@@ -199,7 +192,8 @@ const handleDrawerToggle = () => {
           "& > div": {
             marginLeft: 0,
             marginRight: drawerWidth,
-          }
+          },
+          
         }}
       >
 
@@ -213,6 +207,7 @@ const handleDrawerToggle = () => {
           <Route path="/needy/add" element={<CreateNeedy />} />
           <Route path="/volunteer/:id" element={<VolunteerDetails />} />
           <Route path="/needy/:id" element={<NeedyDetails />} />
+          <Route path="/Updates" element={<IndexReminder />} />
           <Route path="/needy/:id/shibuz/:id/:city/:neighborhood/:type/:day/:partInDay" element={<Shibuz />}/>
         </Routes>
       </Box>
@@ -221,10 +216,7 @@ const handleDrawerToggle = () => {
 }
 
 ResponsiveDrawer.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
+ 
   window: PropTypes.func,
 };
 

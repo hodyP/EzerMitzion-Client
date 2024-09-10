@@ -1,4 +1,3 @@
-// import './App.css';
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import Register from './pages/register/register';
@@ -14,6 +13,34 @@ import CreateNeedy from "./component/createFamily";
 import VolunteerDetails from "./pages/volunteer/volunteerDetails";
 import NeedyDetails from "./pages/needy/needy";
 import CssBaseline from '@mui/material/CssBaseline';
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
+  ::-webkit-scrollbar {
+      width: 12px;
+      background-color: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-track {
+      background: #e0e0e0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background-color: #888;
+      border-radius: 10px;
+      border: 2px solid #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+  }
+
+  body {
+      scrollbar-width: thin;
+      scrollbar-color: #888 #e0e0e0;
+  }
+`;
+
 const theme = createTheme({
   direction:"ltr",
   palette: {
@@ -29,25 +56,17 @@ const theme = createTheme({
     fontFamily: "'Rubik Light'",
   }
 });
+
 function App() {
   return (
     <UserContextProvider>
     <Router>
-      <ThemeProvider theme={theme}>
-        {/* <ResponsiveDrawer/> */}
-          <Routes>
-            <Route path="/" element={<Alphone />} />
-            <Route path="/login" element={<SignIn />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/Alphone" element={<Alphone />} />
-            <Route path="/volunteer/add" element={<CreateVolunteer />} />
-            <Route path="/needy/add" element={<CreateNeedy />} />
-            <Route path="/volunteer/:id" element={<VolunteerDetails />} />
-            <Route path="/needy/:id" element={<NeedyDetails />} />
-          </Routes>  
-      </ThemeProvider>
-    </Router> 
+    <GlobalStyle />
+  <ThemeProvider theme={theme}>
+    <ResponsiveDrawer>
+    </ResponsiveDrawer>
+  </ThemeProvider>
+</Router>
   </UserContextProvider>
   );
 }

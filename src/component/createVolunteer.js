@@ -169,11 +169,11 @@ export default function CreateVolunteer() {
 });
 
   return (
-    <Box
+    <Box 
       dir="rtl"
       component="form"
       onSubmit={formik.handleSubmit}
-      sx={{ '& .MuiTextField-root': { m: 1, width: '100%' } }}
+      sx={{ '& .MuiTextField-root': { m: 1, width: '100%' } ,width: '100%'}}
       noValidate
       autoComplete="on"
     >

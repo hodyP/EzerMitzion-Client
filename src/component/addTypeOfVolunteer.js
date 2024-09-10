@@ -31,8 +31,8 @@ function getStyles(name, personName, theme) {
 export default function MultipleSelectChip({onDataTypeChange}) {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
-  
   const [types, setTypes] = React.useState([]);
+  
   React.useEffect(() => {
     const fetchTypes = async () => {
       try {

@@ -10,28 +10,28 @@ import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
 import { Typography ,FormControl} from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('שם פרטי הוא שדה חובה').min(2),
+  lastName: Yup.string().required('שם משפחה הוא שדה חובה').min(2).max(10),
+  phone: Yup.string().matches(/^\d{10}$/, 'מספר טלפון חייב להיות בן 10 ספרות').required('טלפון הוא שדה חובה'),
+  email: Yup.string().email('כתובת מייל לא תקינה'),
+  city: Yup.string().required('עיר היא שדה חובה'),
+  neighborhood: Yup.string().required('שכונה היא שדה חובה').min(2),
+  street: Yup.string().required('רחוב הוא שדה חובה').min(2),
+  remaind_time: Yup.number().required('תכיפות לתזכורת היא שדה חובה'),
+  identityNumber: Yup.string(),
+  description: Yup.string(),
+});
 
 export default function CreateNeedy() {
   const navigate = useNavigate();
-  const initialFormData = {
-    first_name:'',
-    last_name:'',
-    phone:'',
-    phone_2:'',
-    mail:'',
-    cityId:'',
-    neighborhood:'',
-    street:'',
-    remaind_time:'',
-    description:'',
-    last_time_updated:''
-  };
-
-  const [formData, setFormData] = React.useState(initialFormData);
-  const [isFormModified, setIsFormModified] = React.useState(false);
+  
   const [err, setError] = React.useState(null);
   const [cities, setCities] = React.useState([]);
+
   React.useEffect(() => {
     const fetchCities = async () => {
       try {
@@ -48,50 +48,23 @@ export default function CreateNeedy() {
   
     fetchCities();
   }, []);
-  const cleanData = () => {
-    setFormData(initialFormData);
-    setIsFormModified(false);
-  };
- 
-  const handleFieldChange = (field, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-    setIsFormModified(true);
-  };
   
-  const handleRemind_timeChange = (event) => {
-    handleFieldChange('remaind_time', event.target.value);
-  };
-  const handleCityChange = (event) => {
-    handleFieldChange('cityId', event.target.value);
-  };
-
-  const handleTextChange = (field) => (event) => {
-    handleFieldChange(field, event.target.value);
-  };
- 
-  const handleAddClick = async () => {
+  const handleAddClick = async (values) => {
     const data = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      phone: formData.phone,
-      phone_2: formData.phone_2?formData.phone_2:null,
-      mail: formData.email,
-      cityId: formData.cityId.toString(),
-      neighborhood: formData.neighborhood,
-      street: formData.street,
-      remaind_time: formData.remaind_time, 
-      description: formData.description?formData.description:null, 
-      last_time_updated:new Date().toISOString().split('T')[0]
+      first_name: values.firstName,
+      last_name: values.lastName,
+      phone: values.phone,
+      phone_2: values.phone_2 ? values.phone_2 : null,
+      mail: values.email,
+      cityId: values.city,
+      neighborhood: values.neighborhood,
+      street: values.street,
+      remaind_time: values.remaind_time,
+      description: values.description ? values.description : null,
+      last_time_updated: new Date().toISOString().split('T')[0],
     };
   console.log(data);
   console.log(new Date().toLocaleDateString())
-    // if (Object.values(formData).some((value) => value === '')) {
-    //   setError('Please fill out all fields.');
-    //   return;
-    // }
   
     try {
       const response = await fetch('http://localhost:3600/api/needy', {
@@ -113,7 +86,7 @@ export default function CreateNeedy() {
       console.log('Server response:', responseData);
       
       setError(null);
-      setIsFormModified(false); // Reset form modification state
+      
       navigate('/Alphone'); // Redirect to the desired page
       return responseData;
     } catch (error) {
@@ -121,163 +94,195 @@ export default function CreateNeedy() {
       console.error('Error:', error);
     }
   };
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      phone_2: '',
+      email: '',
+      city: '',
+      neighborhood: '',
+      street: '',
+      remaind_time: '',
+      identityNumber: '',
+      description: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      handleAddClick(values);
+    },
+  });
+
   return (
     
-    <Box
-    sx={{ width: '100%' }}
-    dir="rtl"
+   <Box
+      sx={{ width: '100%' }}
+      dir="rtl"
       component="form"
-      onSubmit={(e) => {
-        e.preventDefault(); // Prevent default form submission
-        handleAddClick(); // Call your logic here
-      }}
-      // sx={{
-      //   boxSizing: 'border-box',
-      //   '& .MuiTextField-root': { m: 1, width: '100%' },
-      //   width: '100%',
-      //   '@media (min-width: 600px)': {
-      //     width: '1000px',
-      //   },
-      // }}
+      onSubmit={formik.handleSubmit}
       noValidate
       autoComplete="on"
     >
-     
-     <Typography>הוספת משפחה</Typography>
-      {(err !== null) && <Alert severity="error">{err}</Alert>}
-      {isFormModified && <Button variant="text" onClick={cleanData}>ניקוי כל השדות</Button>}
+      <Typography variant="h4">הוספת משפחה</Typography>
+      {err && <Alert severity="error">{err}</Alert>}
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="firstName"
+            name="firstName"
             label="שם פרטי*"
             variant="outlined"
-            value={formData.firstName}
-            onChange={handleTextChange('firstName')}
+            value={formik.values.firstName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+            helperText={formik.touched.firstName && formik.errors.firstName}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            required
-            id="outlined-required"
+            id="lastName"
+            name="lastName"
             label="שם משפחה*"
             variant="outlined"
-            value={formData.lastName}
-            onChange={handleTextChange('lastName')}
+            value={formik.values.lastName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+            helperText={formik.touched.lastName && formik.errors.lastName}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-          required
-            id="outlined-required"
+            id="phone"
+            name="phone"
             label="טלפון*"
             variant="outlined"
-            value={formData.phone}
-            onChange={handleTextChange('phone')}
-          />       
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.phone && Boolean(formik.errors.phone)}
+            helperText={formik.touched.phone && formik.errors.phone}
+          />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="phone_2"
+            name="phone_2"
             label="טלפון 2"
             variant="outlined"
-            value={formData.phone_2}
-            onChange={handleTextChange('phone_2')}
-          />       
+            value={formik.values.phone_2}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
         </Grid>
         <Grid item xs={6}>
           <TextField
             id="email"
+            name="email"
             label="מייל"
             type="email"
             variant="outlined"
-            value={formData.email}
-            onChange={handleTextChange('email')}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
           />
         </Grid>
         <Grid item xs={6}>
           <FormControl fullWidth>
-          <InputLabel id="city-label">עיר*</InputLabel>
-          <Select
-          required
-            labelId="city-label"
-            id="city"
-            label="עיר*"
-            value={formData.city}
-            onChange={handleCityChange}
-            sx={{ width: '100%' }}
-          >
-            {cities.map((city) => (
-              <MenuItem key={city.id} value={city.id}>
-                {city.name}
-              </MenuItem>
-            ))}
-          </Select>
+            <InputLabel id="city-label">עיר*</InputLabel>
+            <Select
+              id="city"
+              name="city"
+              label="עיר*"
+              value={formik.values.city}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.city && Boolean(formik.errors.city)}
+            >
+              {cities.map((city) => (
+                <MenuItem key={city.id} value={city.id}>
+                  {city.name}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
           <FormControl fullWidth>
-          <InputLabel id="remaind_time-label">*תכיפות לתזכורת</InputLabel>
-          <Select
-          required
-            labelId="remaind_time-label"
-            id="remaind_time"
-            label="*תכיפות לתזכורת"
-            value={formData.remaind_time}
-            onChange={handleRemind_timeChange}
-            sx={{ width: '100%' }}
-          >
-            
-            <MenuItem  value="יום">יום</MenuItem>
-            <MenuItem  value="שבוע">שבוע</MenuItem>
-            <MenuItem  value="חודש">חודש</MenuItem>
-          </Select>
+            <InputLabel id="remaind_time-label">תכיפות לתזכורת*</InputLabel>
+            <Select
+              id="remaind_time"
+              name="remaind_time"
+              label="תכיפות לתזכורת*"
+              value={formik.values.remaind_time}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.remaind_time && Boolean(formik.errors.remaind_time)}
+            >
+              <MenuItem value='7'>שבוע</MenuItem>
+              <MenuItem value="30">חודש</MenuItem>
+              {/* <MenuItem value="חודש">חודש</MenuItem> */}
+            </Select>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
           <TextField
-          required
-            id="outlined-required"
+            id="neighborhood"
+            name="neighborhood"
             label="שכונה*"
             variant="outlined"
-            value={formData.neighborhood}
-            onChange={handleTextChange('neighborhood')}
+            value={formik.values.neighborhood}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.neighborhood && Boolean(formik.errors.neighborhood)}
+            helperText={formik.touched.neighborhood && formik.errors.neighborhood}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-          required
-            id="outlined-required"
+            id="street"
+            name="street"
             label="רחוב*"
             variant="outlined"
-            value={formData.street}
-            onChange={handleTextChange('street')}
+            value={formik.values.street}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.street && Boolean(formik.errors.street)}
+            helperText={formik.touched.street && formik.errors.street}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="identityNumber"
+            name="identityNumber"
             label="מספר ת.ז"
             variant="outlined"
-            value={formData.identityNumber}
-            onChange={handleTextChange('identityNumber')}
+            value={formik.values.identityNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="description"
+            name="description"
             label="הערה"
             variant='outlined'
-            value={formData.description}
-            onChange={handleTextChange('description')}
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
         </Grid>
       </Grid>
       <Stack spacing={6} direction="row">
         <Button variant="outlined" type="submit">הוספה</Button>
-        <Button variant="outlined" onClick={()=>{navigate('../Alphone')}}>ביטול</Button>
+        <Button variant="outlined" onClick={() => { navigate('../Alphone') }}>ביטול</Button>
       </Stack>
-     
     </Box>
     
   );
