@@ -17,6 +17,7 @@ export default function CreateRequest(props) {
     const [type, setType] = React.useState("");
     const [types,setTypes]=React.useState([]);
     const [time,setTime]=React.useState("");
+    
     React.useEffect(
         () => {
             const fetchTypes = async () => {

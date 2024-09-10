@@ -32,9 +32,9 @@ const theme = createTheme({
 function App() {
   return (
     <UserContextProvider>
-    {/* <Router>
+    <Router>
       <ThemeProvider theme={theme}>
-        <ResponsiveDrawer/>
+        {/* <ResponsiveDrawer/> */}
           <Routes>
             <Route path="/" element={<Alphone />} />
             <Route path="/login" element={<SignIn />} />
@@ -45,29 +45,9 @@ function App() {
             <Route path="/needy/add" element={<CreateNeedy />} />
             <Route path="/volunteer/:id" element={<VolunteerDetails />} />
             <Route path="/needy/:id" element={<NeedyDetails />} />
-          </Routes>
-       
+          </Routes>  
       </ThemeProvider>
-    </Router> */}
-    <Router>
-  <ThemeProvider theme={theme}>
-  
-    <ResponsiveDrawer>
-      {/* Routes for navigation */}
-      {/* <Routes>
-        <Route path="/" element={<Alphone />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/Alphone" element={<Alphone />} />
-        <Route path="/volunteer/add" element={<CreateVolunteer />} />
-        <Route path="/needy/add" element={<CreateNeedy />} />
-        <Route path="/volunteer/:id" element={<VolunteerDetails />} />
-        <Route path="/needy/:id" element={<NeedyDetails />} />
-      </Routes> */}
-    </ResponsiveDrawer>
-  </ThemeProvider>
-</Router>
+    </Router> 
   </UserContextProvider>
   );
 }

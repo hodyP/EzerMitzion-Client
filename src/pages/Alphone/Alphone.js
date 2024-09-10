@@ -85,8 +85,6 @@ export default function Alphone() {
 
   return (
     <Box sx={{ width: '100%' }}>
-
-    
       {(ShowNeedy) ? (
         <> <Button variant="outlined" startIcon={<AddIcon />} onClick={handlenavigateFamily}>
           הוספת משפחה

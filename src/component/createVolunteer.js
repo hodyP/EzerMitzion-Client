@@ -11,25 +11,27 @@ import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
 import MultipleSelectChip from "./addTypeOfVolunteer"
 import { FormControl, Typography } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('שם פרטי הוא שדה חובה').min(2),
+  lastName: Yup.string().required('שם משפחה הוא שדה חובה').min(2).max(10),
+  phone: Yup.string().matches(/^\d{10}$/, 'מספר טלפון חייב להיות בן 10 ספרות').required('טלפון הוא שדה חובה'),
+  email: Yup.string().email('כתובת מייל לא תקינה').required('מייל הוא שדה חובה'),
+  city: Yup.string().required('עיר היא שדה חובה'),
+  identityNumber: Yup.string().required('תעודת זהות היא שדה חובה').matches(/^\d{9}$/, 'תעודת זהות לא תקינה'),
+  age: Yup.number().min(14, 'הגיל חייב להיות לפחות 14').required('גיל הוא שדה חובה').max(25,'הגיל עד 25'),
+});
+
+
 export default function CreateVolunteer() {
   const navigate = useNavigate();
-  const initialFormData = {
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    city: '',
-    neighborhood: '',
-    street: '',
-    identityNumber: '',
-    age: '',
-  };
-
-  const [formData, setFormData] = React.useState(initialFormData);
-  const [isFormModified, setIsFormModified] = React.useState(false);
+ 
   const [err, setError] = React.useState(null);
   const [datatype, setDatatype] = React.useState([]);
   const [cities, setCities] = React.useState([]);
+
   React.useEffect(() => {
     const fetchCities = async () => {
       try {
@@ -46,44 +48,21 @@ export default function CreateVolunteer() {
 
     fetchCities();
   }, []);
+
   const handleAddType = (selectedObjects) => {
     setDatatype(selectedObjects);
   }
-  const cleanData = () => {
-    setFormData(initialFormData);
-    setIsFormModified(false);
-  };
+  
 
-  const handleFieldChange = (field, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-    setIsFormModified(true);
-  };
-
-  const handleCityChange = (event) => {
-    handleFieldChange('city', event.target.value);
-  };
-
-  const handleTextChange = (field) => (event) => {
-    handleFieldChange(field, event.target.value);
-  };
   function calculateDOBFromAge(ageString) {
-    // Parse age string to get the age as a number
+    
     const age = parseInt(ageString, 10);
-
-    // Get the current date
     const currentDate = new Date();
-
-    // Calculate the birth year
     const birthYear = currentDate.getFullYear() - age;
-
-    // Create a new Date object with the calculated birth year
-    const dateOfBirth = new Date(birthYear, 0, 1); // Assuming January 1 for simplicity
-
+    const dateOfBirth = new Date(birthYear, 0, 1); 
     return dateOfBirth.toISOString().split('T')[0];
   }
+
   const addVolunteerTypes = (id) => {
     datatype.forEach(async (t) => {
       console.log(t);
@@ -106,7 +85,7 @@ export default function CreateVolunteer() {
         console.log('Server response:', responseData);
 
         setError(null);
-        setIsFormModified(false); // Reset form modification state
+        
         navigate('/Alphone');
         return responseData;
       } catch (error) {
@@ -116,17 +95,17 @@ export default function CreateVolunteer() {
     }
     )
   }
-  const addVolunteer = async () => {
+  const addVolunteer = async (values) => {
     const data = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      phone: formData.phone,
-      mail: formData.email,
-      cityId: formData.city,
-      neighborhood: formData.neighborhood,
-      street: formData.street,
-      identity_number: formData.identityNumber,
-      date_of_birth: calculateDOBFromAge(formData.age),
+        first_name: values.firstName,
+        last_name: values.lastName,
+        phone: values.phone,
+        mail: values.email,
+        cityId: values.city,
+        neighborhood: values.neighborhood,
+        street: values.street,
+        identity_number: values.identityNumber,
+        date_of_birth: calculateDOBFromAge(values.age),
     };
 
     // if (Object.values(formData).some((value) => value === '')) {
@@ -153,71 +132,89 @@ export default function CreateVolunteer() {
       console.log('Server response:', responseData);
 
       setError(null);
-      setIsFormModified(false); // Reset form modification state
+      // Reset form modification state
       return responseData;
     } catch (error) {
       setError('An unexpected error occurred.');
       console.error('Error:', error);
     }
   }
-  const handleAddClick = async () => {
+
+
+  const formik = useFormik({
+  initialValues: {
+    firstName: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    city: '',
+    neighborhood: '',
+    street: '',
+    identityNumber: '',
+    age: '',
+  },
+  validationSchema: validationSchema,
+  onSubmit: async (values) => {
     try {
-      console.log("in function handleAddClick")
-      const volunteer =await addVolunteer();
+      console.log("in function handleAddClick");
+      const volunteer = await addVolunteer(values);
       if (volunteer) {
         addVolunteerTypes(volunteer.id);
         navigate("/Alphone");
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error adding volunteerDetails:', error);
     }
-  };
+  },
+});
+
   return (
     <Box
-    dir="rtl" 
-    component="form"
-      onSubmit={(e) => {
-        e.preventDefault(); 
-        handleAddClick(); 
-      }}
-      sx={{
-        '& .MuiTextField-root': { m: 1, width: '100%' },
-      }}
+      dir="rtl"
+      component="form"
+      onSubmit={formik.handleSubmit}
+      sx={{ '& .MuiTextField-root': { m: 1, width: '100%' } }}
       noValidate
       autoComplete="on"
     >
-
-      <Typography variant="h4">הוספת מתנדבת</Typography>
+      <Typography variant="h4">הוספת מתנדב</Typography>
       {(err !== null) && <Alert severity="error">{err}</Alert>}
-      {isFormModified && <Button variant="text" onClick={cleanData}>ניקוי כל השדות</Button>}
       <MultipleSelectChip onDataTypeChange={handleAddType}></MultipleSelectChip>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="firstName"
             label="שם פרטי"
             variant="outlined"
-            value={formData.firstName}
-            onChange={handleTextChange('firstName')}
+            value={formik.values.firstName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+            helperText={formik.touched.firstName && formik.errors.firstName}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="lastName"
             label="שם משפחה"
             variant="outlined"
-            value={formData.lastName}
-            onChange={handleTextChange('lastName')}
+            value={formik.values.lastName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+            helperText={formik.touched.lastName && formik.errors.lastName}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="phone"
             label="טלפון"
             variant="outlined"
-            value={formData.phone}
-            onChange={handleTextChange('phone')}
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.phone && Boolean(formik.errors.phone)}
+            helperText={formik.touched.phone && formik.errors.phone}
           />
         </Grid>
         <Grid item xs={6}>
@@ -226,63 +223,77 @@ export default function CreateVolunteer() {
             label="מייל"
             type="email"
             variant="outlined"
-            value={formData.email}
-            onChange={handleTextChange('email')}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
           />
         </Grid>
         <Grid item xs={6}>
-        <FormControl fullWidth>
-          <InputLabel id="city-label">עיר</InputLabel>
-          <Select
-            labelId="city-label"
-            id="city"
-           
-            value={formData.city}
-            onChange={handleCityChange}
-            sx={{ width: '100%' }}
-          >
-            {cities.map((city) => (
-              <MenuItem key={city.id} value={city.id}>
-                {city.name}
-              </MenuItem>
-            ))}
+          <FormControl fullWidth>
+            <InputLabel id="city-label">עיר</InputLabel> 
+            <Select
+              labelId="city-label"
+              id="city"
+              name="city" // הוסיפי name="city" ל-Select
+              value={formik.values.city}
+              onChange={formik.handleChange} // עדכון ה-state של Formik
+              onBlur={formik.handleBlur}
+              error={formik.touched.city && Boolean(formik.errors.city)}
+              >
+              {cities.map((city) => (
+                  <MenuItem key={city.id} value={city.id}>
+                      {city.name}
+                  </MenuItem>
+              ))}
           </Select>
+
           </FormControl>
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="neighborhood"
             label="שכונה"
             variant="outlined"
-            value={formData.neighborhood}
-            onChange={handleTextChange('neighborhood')}
+            value={formik.values.neighborhood}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="street"
             label="רחוב"
             variant="outlined"
-            value={formData.street}
-            onChange={handleTextChange('street')}
+            value={formik.values.street}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="identityNumber"
             label="תעודת זהות"
             variant="outlined"
-            value={formData.identityNumber}
-            onChange={handleTextChange('identityNumber')}
+            value={formik.values.identityNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.identityNumber && Boolean(formik.errors.identityNumber)}
+            helperText={formik.touched.identityNumber && formik.errors.identityNumber}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="outlined-required"
+            id="age"
             label="גיל"
-            type='number'
-            value={formData.age}
-            onChange={handleTextChange('age')}
+            type="number"
+            variant="outlined"
+            value={formik.values.age}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.age && Boolean(formik.errors.age)}
+            helperText={formik.touched.age && formik.errors.age}
           />
         </Grid>
       </Grid>
@@ -290,7 +301,6 @@ export default function CreateVolunteer() {
         <Button variant="outlined" type="submit">הוספה</Button>
         <Button variant="outlined" onClick={() => { navigate('../Alphone') }}>ביטול</Button>
       </Stack>
-     
     </Box>
   );
 }
