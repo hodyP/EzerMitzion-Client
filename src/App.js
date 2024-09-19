@@ -43,6 +43,7 @@ const GlobalStyle = createGlobalStyle`
 
 const theme = createTheme({
   direction:"ltr",
+  fontFamily:"Abraham",
   palette: {
     primary: {
       main: "#FF0909",
@@ -54,7 +55,8 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "'Rubik Light'",
-  }
+  },
+  
 });
 
 function App() {

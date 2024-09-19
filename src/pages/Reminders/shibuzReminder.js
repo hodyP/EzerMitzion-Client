@@ -43,7 +43,7 @@ const ShibuzReminder = (props) => {
      <Box sx={{ display: 'flex', alignItems: 'center' ,direction: 'rtl'}}>
       <Box 
      sx={{ 
-        bgcolor: '#f5f5f5', 
+        
         height: 100, 
         textAlign: 'center', 
         display: 'flex', 
@@ -53,14 +53,14 @@ const ShibuzReminder = (props) => {
       }}>
         <Avatar 
         sx={{ 
-        border: '2px solid #424242', 
-        bgcolor: 'transparent',
+        border: '2px solid #A9A9A9', 
+        bgcolor: '#f0f0f0',
           width: 40, 
           height: 40,
           marginLeft: 1
         }}
       >
-        <EventAvailableOutlinedIcon sx={{ color: '#424242' }}/>
+        <EventAvailableOutlinedIcon sx={{ color: '#A9A9A9',   }}/>
         </Avatar>
       <Box sx={{ textAlign: 'right' }}>
         <Typography variant="subtitle2" color="textSecondary">
@@ -75,7 +75,7 @@ const ShibuzReminder = (props) => {
         <Divider orientation="vertical" flexItem sx={{ bgcolor: '#e0e0e0' }} />
    <Box 
      sx={{ 
-        bgcolor: '#f5f5f5', 
+       
         height: 100, 
         textAlign: 'center', 
         display: 'flex', 
@@ -85,14 +85,14 @@ const ShibuzReminder = (props) => {
       }}>
         <Avatar 
         sx={{ 
-        border: '2px solid #424242', 
-        bgcolor: 'transparent',
+          border: '2px solid #A9A9A9', 
+          bgcolor: '#f0f0f0',
           width: 40, 
           height: 40,
           marginLeft: 1
         }}
       >
-        <AccessTimeOutlinedIcon sx={{ color: '#424242' }}/>
+        <AccessTimeOutlinedIcon sx={{ color: '#A9A9A9' }}/>
         </Avatar>
       <Box sx={{ textAlign: 'right' }}>
         <Typography variant="subtitle2" color="textSecondary">
@@ -108,7 +108,7 @@ const ShibuzReminder = (props) => {
     <Divider orientation="vertical" flexItem sx={{ bgcolor: '#e0e0e0' }} />
     <Box 
       sx={{ 
-        bgcolor: '#f5f5f5', 
+       
         height: 100, 
         textAlign: 'center', 
         display: 'flex', 
@@ -118,14 +118,14 @@ const ShibuzReminder = (props) => {
       }}>
          <Avatar 
         sx={{ 
-        border: '2px solid #424242', 
-        bgcolor: 'transparent',
+          border: '2px solid #A9A9A9', 
+          bgcolor: '#f0f0f0',
           width: 40, 
           height: 40,
           marginLeft: 1
         }}
       >
-        <Face3OutlinedIcon sx={{ color: '#424242' }}/>
+        <Face3OutlinedIcon sx={{ color: '#A9A9A9' }}/>
         </Avatar>
       <Box sx={{ textAlign: 'right' }}>
         <Typography variant="subtitle2" color="textSecondary">
@@ -140,8 +140,8 @@ const ShibuzReminder = (props) => {
         <Divider orientation="vertical" flexItem sx={{ bgcolor: '#e0e0e0' }} />
     <Box 
       sx={{ 
-        bgcolor: '#f5f5f5', 
-        height: 100, // גובה דוגמה, ניתן לשנות
+        
+        height: 100, 
         textAlign: 'center', 
         display: 'flex', 
         alignItems: 'center', 
@@ -150,14 +150,14 @@ const ShibuzReminder = (props) => {
       }}>
          <Avatar 
         sx={{ 
-        border: '2px solid #424242', 
-        bgcolor: 'transparent',
+          border: '2px solid #A9A9A9', 
+          bgcolor: '#f0f0f0',
           width: 40, 
           height: 40,
           marginLeft: 1
         }}
       >
-        <PhoneEnabledOutlinedIcon sx={{ color: '#424242' }}/>
+        <PhoneEnabledOutlinedIcon sx={{ color: '#A9A9A9' }}/>
         </Avatar>
       <Box sx={{ textAlign: 'right' }}>
         <Typography variant="subtitle2" color="textSecondary">
@@ -172,10 +172,10 @@ const ShibuzReminder = (props) => {
     
   
     </Box>
-      <Button style={{  backgroundColor:'#dd0800' }} variant="contained" onClick={() =>props.onCancel(requ.id)} >
+      <Button style={{   }} variant="outlined" onClick={() =>props.onCancel(requ.id)} >
         בטל התאמה זו
       </Button>
-       <Button style={{ marginLeft: '5px', backgroundColor:'#dd0800' }} variant="contained" marginLeft="10" onClick={() =>props.onSibuz(requ.id)}>
+       <Button style={{ marginLeft: '5px', }} variant="outlined" marginLeft="10" onClick={() =>props.onSibuz(requ.id)}>
         שבץ מתנדבת
       </Button>
 

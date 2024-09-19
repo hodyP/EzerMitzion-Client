@@ -22,13 +22,13 @@ const validationSchema = Yup.object({
   neighborhood: Yup.string().required('שכונה היא שדה חובה').min(2),
   street: Yup.string().required('רחוב הוא שדה חובה').min(2),
   remaind_time: Yup.number().required('תכיפות לתזכורת היא שדה חובה'),
-  identityNumber: Yup.string(),
+ 
   description: Yup.string(),
 });
 
-export default function CreateNeedy() {
+export default function CreateNeedy(props) {
+  const { existingData = {} } = props;
   const navigate = useNavigate();
-  
   const [err, setError] = React.useState(null);
   const [cities, setCities] = React.useState([]);
 
@@ -50,25 +50,38 @@ export default function CreateNeedy() {
   }, []);
   
   const handleAddClick = async (values) => {
+    console.log(values.city)
     const data = {
-      first_name: values.firstName,
-      last_name: values.lastName,
-      phone: values.phone,
-      phone_2: values.phone_2 ? values.phone_2 : null,
-      mail: values.email,
-      cityId: values.city,
-      neighborhood: values.neighborhood,
-      street: values.street,
-      remaind_time: values.remaind_time,
-      description: values.description ? values.description : null,
+      first_name: values.firstName || '',
+      last_name: values.lastName || '',
+      phone: values.phone || '',
+      phone_2: values.phone_2 || '',
+      mail: values.email || '',
+      cityId: values.city || '',
+      neighborhood: values.neighborhood || '',
+      street: values.street || '',
+      remaind_time: values.remaind_time || '',
+      description: values.description || '',
       last_time_updated: new Date().toISOString().split('T')[0],
     };
   console.log(data);
   console.log(new Date().toLocaleDateString())
-  
+
+  let url;
+  let method;
+  if(props.edited)
+    {
+      url=`http://localhost:3600/api/needy/${existingData.id}`
+      method="PATCH"
+      console.log("אני בעריכה")
+      
+  }else{
+    url=`http://localhost:3600/api/needy`
+      method="POST"
+  }
     try {
-      const response = await fetch('http://localhost:3600/api/needy', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -79,15 +92,16 @@ export default function CreateNeedy() {
         const errorData = await response.json();
         setError(errorData.message);
         console.error('Server error:', errorData);
+        console.log(response)
         return;
       }
   
       const responseData = await response.json();
       console.log('Server response:', responseData);
       
-      setError(null);
-      
-      navigate('/Alphone'); // Redirect to the desired page
+      setError(null);    
+      props.onClose(); 
+      props.success()     
       return responseData;
     } catch (error) {
       setError('An unexpected error occurred.');
@@ -97,20 +111,21 @@ export default function CreateNeedy() {
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      phone_2: '',
-      email: '',
-      city: '',
-      neighborhood: '',
-      street: '',
-      remaind_time: '',
-      identityNumber: '',
-      description: '',
+      firstName: existingData.first_name || '',
+      lastName: existingData.last_name || '',
+      phone: existingData.phone || '',
+      phone_2: existingData.phone_2 || '',
+      email: existingData.mail || '',
+      city: existingData.cityId || '',
+      neighborhood: existingData.neighborhood || '',
+      street: existingData.street || '',
+      remaind_time: existingData.remaind_time || '',
+      
+      description: existingData.description || '',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      
       handleAddClick(values);
     },
   });
@@ -118,17 +133,17 @@ export default function CreateNeedy() {
   return (
     
    <Box
-      sx={{ width: '100%' }}
+      sx={{ '& .MuiTextField-root': { m:2, dir:"rtl",width: '100%' } ,width: '100%', '& .MuiFormControl-root': { m: 1, width: '100%' }}}
       dir="rtl"
       component="form"
       onSubmit={formik.handleSubmit}
       noValidate
       autoComplete="on"
     >
-      <Typography variant="h4">הוספת משפחה</Typography>
+      <Typography variant="h5">הוספת משפחה</Typography>
       {err && <Alert severity="error">{err}</Alert>}
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item  xs={12} sm={6} >
           <TextField
             id="firstName"
             name="firstName"
@@ -141,7 +156,7 @@ export default function CreateNeedy() {
             helperText={formik.touched.firstName && formik.errors.firstName}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item  xs={12} sm={6} >
           <TextField
             id="lastName"
             name="lastName"
@@ -154,7 +169,7 @@ export default function CreateNeedy() {
             helperText={formik.touched.lastName && formik.errors.lastName}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             id="phone"
             name="phone"
@@ -167,7 +182,7 @@ export default function CreateNeedy() {
             helperText={formik.touched.phone && formik.errors.phone}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             id="phone_2"
             name="phone_2"
@@ -178,8 +193,8 @@ export default function CreateNeedy() {
             onBlur={formik.handleBlur}
           />
         </Grid>
-        <Grid item xs={6}>
-          <TextField
+        <Grid item xs={12}>
+          <TextField 
             id="email"
             name="email"
             label="מייל"
@@ -192,7 +207,25 @@ export default function CreateNeedy() {
             helperText={formik.touched.email && formik.errors.email}
           />
         </Grid>
-        <Grid item xs={6}>
+        
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <InputLabel id="remaind_time-label">תכיפות לתזכורת*</InputLabel>
+            <Select
+              id="remaind_time"
+              name="remaind_time"
+              label="תכיפות לתזכורת*"
+              value={formik.values.remaind_time}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.remaind_time && Boolean(formik.errors.remaind_time)}
+            >
+              <MenuItem value='7'>שבוע</MenuItem>
+              <MenuItem value="30">חודש</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <InputLabel id="city-label">עיר*</InputLabel>
             <Select
@@ -212,25 +245,8 @@ export default function CreateNeedy() {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={6}>
-          <FormControl fullWidth>
-            <InputLabel id="remaind_time-label">תכיפות לתזכורת*</InputLabel>
-            <Select
-              id="remaind_time"
-              name="remaind_time"
-              label="תכיפות לתזכורת*"
-              value={formik.values.remaind_time}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.remaind_time && Boolean(formik.errors.remaind_time)}
-            >
-              <MenuItem value='7'>שבוע</MenuItem>
-              <MenuItem value="30">חודש</MenuItem>
-              {/* <MenuItem value="חודש">חודש</MenuItem> */}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={6}>
+        
+        <Grid item xs={12} sm={6}>
           <TextField
             id="neighborhood"
             name="neighborhood"
@@ -243,7 +259,7 @@ export default function CreateNeedy() {
             helperText={formik.touched.neighborhood && formik.errors.neighborhood}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             id="street"
             name="street"
@@ -256,18 +272,8 @@ export default function CreateNeedy() {
             helperText={formik.touched.street && formik.errors.street}
           />
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            id="identityNumber"
-            name="identityNumber"
-            label="מספר ת.ז"
-            variant="outlined"
-            value={formik.values.identityNumber}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-        </Grid>
-        <Grid item xs={6}>
+        
+        <Grid item xs={12}>
           <TextField
             id="description"
             name="description"
@@ -279,11 +285,12 @@ export default function CreateNeedy() {
           />
         </Grid>
       </Grid>
-      <Stack spacing={6} direction="row">
-        <Button variant="outlined" type="submit">הוספה</Button>
-        <Button variant="outlined" onClick={() => { navigate('../Alphone') }}>ביטול</Button>
+      <Stack  direction="row">
+        <Button variant="outlined" type="submit" sx={{  margin: "10px"}}> {existingData.id ? 'עדכון' : 'הוספה'}</Button>
+        <Button variant="outlined" sx={{  margin: "10px" }} onClick={() => { props.onClose(); }}>ביטול</Button>
       </Stack>
     </Box>
+    
     
   );
 }

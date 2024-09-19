@@ -28,9 +28,11 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelectChip({onDataTypeChange}) {
+
+
+export default function MultipleSelectChip(props) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
+  const [personName, setPersonName] = React.useState(props.data||[]);
   const [types, setTypes] = React.useState([]);
   
   React.useEffect(() => {
@@ -58,17 +60,17 @@ export default function MultipleSelectChip({onDataTypeChange}) {
     } = event;
     const selectedObjects = types.filter((type) => value.includes(type.name))
     .map((selectedType) => selectedType.id);;
-    onDataTypeChange(selectedObjects);
+    props.onDataTypeChange(selectedObjects);
     setPersonName(
-      // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-
+    console.log(personName)
   };
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <FormControl sx={{ m: 1, width: "100%"
+      }}>
         <InputLabel id="demo-multiple-chip-label">תחום</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"

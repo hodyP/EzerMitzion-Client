@@ -1,25 +1,49 @@
 import * as React from 'react';
-import { DataGrid,GridToolbar  } from '@mui/x-data-grid';
+import { DataGrid,GridToolbar ,GridToolbarContainer } from '@mui/x-data-grid';
 import { useState,useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import LinearProgress from '@mui/material/LinearProgress';
-
 import axios from 'axios';
-const columns = [
-  { field: 'id', headerName: 'מספר', width: 90 },
-  { field: 'first_name', headerName: 'שם פרטי', width: 130 },
-  { field: 'last_name', headerName: 'שם משפחה', width: 150 },
-  { field: 'phone', headerName: 'טלפון', type: 'phone', width: 130 },
-  { field: 'city', headerName: 'עיר', width: 130 },
-  { field: 'neighborhood', headerName: 'שכונה', width: 180 },
-];
+import { Button ,Box} from '@mui/material';
+import { IconButton ,Tooltip  } from '@mui/material';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+const CustomToolbar = ({ onDeleteClick, selectedRows }) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <GridToolbar />
+      <Tooltip title="Delete">
+        <IconButton
+          onClick={onDeleteClick}
+          disabled={selectedRows.length === 0}
+          style={{ color: selectedRows.length > 0 ? 'red' : 'grey' }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    </div>
+  );
+};
 
 export default function DataTable(props) {
-    const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
- 
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleDeleteClick = () => {
+    if (selectedRows.length > 0) {
+      props.deleteRow();
+    }
+  };
+
+  const handleRowSelection = (newSelection) => {
+    setSelectedRows(newSelection);
+    props.handleSetRowSelectionModel(newSelection)
+  };
   
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,18 +58,47 @@ export default function DataTable(props) {
     };
     fetchData(); 
   }, [props.url]);
+
+  const filteredRows = data.filter(row => 
+    row.first_name.toLowerCase().includes(props.SearchTerm.toLowerCase()) ||
+    row.last_name.toLowerCase().includes(props.SearchTerm.toLowerCase())
+  );
  
+  const columns = [
+    { field: 'id', headerName: 'מספר', width: 90 },
+    { field: 'first_name', headerName: 'שם פרטי', width: 130 },
+    { field: 'last_name', headerName: 'שם משפחה', width: 150 },
+    { field: 'phone', headerName: 'טלפון', type: 'phone', width: 130 },
+    { field: 'city', headerName: 'עיר', width: 130 },
+    { field: 'neighborhood', headerName: 'שכונה', width: 180 },
+    {
+      field: 'actions',
+      headerName: '',
+      
+      renderCell: (params) => (
+        <IconButton
+        onClick={(event) => props.handleRowDoubleClick(event,params)}
+          variant="contained"
+          color="primary"
+        >
+          <MoreHorizIcon />
+        </IconButton>
+      ),
+    },
+  ];
+  
+
   return (
-    <div style={{ height: 400, width: '100%', direction: 'rtl' }}>
+    <div style={{ height:500,width: '100%', direction: 'rtl' }}>
         {loading ? (
         <LinearProgress color="secondary"/>
   ) : error ? (
     <p>Error: {error}</p>
   ) : (
-    <>
+    <>    
       <DataGrid
        dir="rtl"
-      rows={data.map((item) => ({
+      rows={filteredRows.map((item) => ({
         id: item.id,
         first_name: item.first_name,
         last_name: item.last_name,
@@ -56,19 +109,22 @@ export default function DataTable(props) {
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
+            paginationModel: { page: 0, pageSize: 20 },
           },
         }}
-        slots={{
-            toolbar: GridToolbar,
-          }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-  
-        onRowSelectionModelChange={(newRowSelectionModel) => {    
-          props.handleSetRowSelectionModel(newRowSelectionModel);
-          
+        components={{
+          Toolbar: CustomToolbar,
         }}
+        componentsProps={{
+          toolbar: {
+            onDeleteClick: handleDeleteClick,
+            selectedRows: selectedRows,
+          },
+        }}
+        onRowSelectionModelChange={handleRowSelection}
+        pageSizeOptions={[10, 20]}
+        checkboxSelection 
+        
       />  </>)}
     </div>
   

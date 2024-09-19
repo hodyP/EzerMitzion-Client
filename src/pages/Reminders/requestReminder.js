@@ -85,7 +85,7 @@ function RequestReminder() {
             ))}
           </Box>):
 
-          (<div >
+          (<div dir='rtl'>
             אין שיבצים שלא אושרו
           </div>
         )} 

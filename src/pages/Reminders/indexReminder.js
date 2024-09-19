@@ -21,7 +21,7 @@ function IndexReminder() {
              padding="10px"
              maxHeight="100vh"
              overflow="auto">
-                <h2 >  מחכות לשיבוץ:</h2>
+                <h2 dir='rtl'>  מחכות לשיבוץ:</h2>
            <RequestReminder></RequestReminder>
             </Box>
         </Box>

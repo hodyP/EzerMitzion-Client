@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { Button } from '@mui/material';
 import CreateRequest from '../../component/createRequest';
+import {Box} from '@mui/material';
+
 function Needy_requests(props) {
     const [value, setValue] = useState(0);
     const [showRequests, setShowRequests] = useState(true);
@@ -91,7 +93,7 @@ function Needy_requests(props) {
         }
     };
     return (
-        <>
+        <Box sx={{p:2}}>
             <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
                 <LinkTab label="סטטוס שיבוץ" href="/requests" />
                 <LinkTab label="היסטוריה" href="/Requests" />
@@ -104,15 +106,13 @@ function Needy_requests(props) {
             </Tabs>
             <List
                 sx={{
-                    width: '100%',
-                    height: '100%',
-                    bgcolor: 'background.paper',
+                    width: '90%',
+                    margin: '0 auto',                         
                     position: 'relative',
                     overflow: 'auto',
                     maxHeight: 500,
                     '& ul': { padding: 0 },
                 }}
-
             >
                 {showRequests ? (
                     <>
@@ -136,7 +136,7 @@ function Needy_requests(props) {
                     </>
                 )}
             </List>
-        </>
+        </Box>
 
     )
 }

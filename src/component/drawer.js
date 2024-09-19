@@ -48,7 +48,7 @@ const handleDrawerToggle = () => {
   };
 
   const drawer = (
-    <div style={{ backgroundColor:"#f1edff" ,minHeight: '100vh',  }}>
+    <div style={{ backgroundColor:"#F4F6FA" ,minHeight: '100vh',  }}>
       <Toolbar />
       <Box
         sx={{
@@ -71,7 +71,7 @@ const handleDrawerToggle = () => {
         
         
       </Box >
-      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,backgroundColor:"#dde4ed"}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
+      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
 
       <Time></Time>
       <Divider />
@@ -178,8 +178,8 @@ const handleDrawerToggle = () => {
         dir="ltr"
         component="main"
         sx={{
-          flexGrow: 1,
-          p: 3,
+          //flexGrow: 1,
+          //p: 3,
           marginLeft: 0,
           marginRight: 50,
           marginTop: 6,

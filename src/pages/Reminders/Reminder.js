@@ -55,13 +55,13 @@ function Reminder() {
         {needyRemindDate.length > 0?
         (<Box >
             
-            <h2>צריך ליצור קשר:</h2>
+            <h2 dir='rtl'>צריך ליצור קשר:</h2>
             {needyRemindDate.map((item) => (
                 <NeedyReminder key={item.id} needy={item} onRemove={handleRemove} />
             ))}
           </Box>):
 
-          (<div >
+          (<div dir='rtl'>
             הידד! כבר התקשרת לכל המשפחות
           </div>
         )} 
