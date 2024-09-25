@@ -1,16 +1,18 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext();
+//export const CurrentUser = localStorage.getItem("user") || null;
 
 export const UserContextProvider = ({ children }) => {
- 
+ const a=JSON.parse(localStorage.getItem("user") )|| null;
 
   const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("user") || "null")
+    JSON.parse(localStorage.getItem("user") || null)
   );
 
-  const [token, setToken] = useState(localStorage.getItem("token") || "null");
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   const login = async ({ firstName,lastName, password }) => {
     const res = await axios.post("http://localhost:3600/api/manager/login", 
@@ -37,9 +39,11 @@ export const UserContextProvider = ({ children }) => {
     localStorage.setItem("token", token);
   }, [token]);
 
+
   return (
     <UserContext.Provider value={{ currentUser, token, login, logout }}>
       {children}
     </UserContext.Provider>
   );
 };
+

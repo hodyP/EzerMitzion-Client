@@ -81,8 +81,6 @@ export default function Alphone() {
     }
     };
 
-    
-
     const deleteVolunteer = async () => {
       try {
         const response = await fetch('http://localhost:3600/api/Volunteer', {
@@ -92,6 +90,7 @@ export default function Alphone() {
           },
           body: JSON.stringify({ arr: rowSelectionModel }), 
         });
+        setKey(prevKey => prevKey + 1)
     
         if (!response.ok) {
           throw new Error('Error deleting items: ' + response.statusText);

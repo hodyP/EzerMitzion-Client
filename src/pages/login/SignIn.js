@@ -22,12 +22,15 @@ import { useNavigate } from "react-router-dom";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+const CurrentUser=UserContext.a;
+
   const navigate = useNavigate();
   const { login } = useContext(UserContext);
   const [err, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("פונקציה למציאת משתמש"+CurrentUser);
     const data = new FormData(event.currentTarget);
     const userDetails={
       firstName: data.get('firstName'),

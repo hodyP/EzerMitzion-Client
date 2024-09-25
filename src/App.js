@@ -5,15 +5,12 @@ import SignIn from "./pages/login/SignIn";
 import { UserContextProvider } from "./context/userContext";
 import Logout from "./pages/login/SignOut";
 import ResponsiveAppBar from "./component/navbar";
-import Alphone from "./pages/Alphone/Alphone";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ResponsiveDrawer from "./component/drawer";
-import CreateVolunteer from "./component/createVolunteer";
-import CreateNeedy from "./component/createFamily";
-import VolunteerDetails from "./pages/volunteer/volunteerDetails";
-import NeedyDetails from "./pages/needy/needy";
+
 import CssBaseline from '@mui/material/CssBaseline';
 import { createGlobalStyle } from 'styled-components';
+import { CurrentUser } from "./context/userContext";
 
 const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar {
@@ -60,16 +57,15 @@ const theme = createTheme({
 });
 
 function App() {
-  return (
-    <UserContextProvider>
+  return (<UserContextProvider>
     <Router>
     <GlobalStyle />
-  <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
     <ResponsiveDrawer>
     </ResponsiveDrawer>
   </ThemeProvider>
 </Router>
-  </UserContextProvider>
+  </UserContextProvider> 
   );
 }
 export default App;

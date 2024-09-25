@@ -45,6 +45,10 @@ export default function CreateVolunteer(props) {
       } catch (error) {
         console.error('Error fetching cities:', error);
       }
+      if(existingData.id){
+      const trans=props.existingData.volunteer_details.map(obj => obj.id)
+      setDatatype(trans)
+    }
     };
 
     fetchCities();
@@ -54,7 +58,6 @@ export default function CreateVolunteer(props) {
     setDatatype(selectedObjects);
   }
   
-
   function calculateDOBFromAge(ageString) {
     
     const age = parseInt(ageString, 10);
@@ -84,16 +87,46 @@ export default function CreateVolunteer(props) {
         }
         const responseData = await res.json();
         console.log('Server response:', responseData);
-        setError(null);
-        navigate('/Alphone');
+        setError(null);       
         return responseData;
       } catch (error) {
         setError('An unexpected error occurred.');
         console.error('Error:', error);
       }
+      props.onClose();
     }
     )
   }
+
+  const updateVolunteerType=async(id)=>{
+    console.log("  אבגדהו"  + Array.isArray(datatype))
+    const arr=datatype;
+    console.log(arr);
+    try {
+      const res = await fetch(`http://localhost:3600/api/volunteer_details/volunteer/${existingData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({arr}),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.message);
+        console.error('Server error:', errorData);
+        return;
+      }
+      const responseData = await res.json();
+      console.log('Server response:', responseData);
+      setError(null);       
+      return responseData;
+    } catch (error) {
+      setError('An unexpected error occurred.');
+      console.error('Error:', error);
+    }
+    props.onClose();
+  }
+
   const addVolunteer = async (values) => {
     const data = {
         first_name: values.firstName,
@@ -162,7 +195,10 @@ export default function CreateVolunteer(props) {
       console.log("in function handleAddClick");
       const volunteer = await addVolunteer(values);
       if (volunteer) {
-        addVolunteerTypes(volunteer.id);
+        if(existingData.id){
+          updateVolunteerType(volunteer.id);
+        }
+        else addVolunteerTypes(volunteer.id);
         props.success()
         props.onClose();              
       }
@@ -176,12 +212,20 @@ function transfornat(){
   
   return  props.existingData.volunteer_details.map(obj => obj.name);
 }
+
   return (
     <Box 
       dir="rtl"
       component="form"
       onSubmit={formik.handleSubmit}
-      sx={{ '& .MuiTextField-root': { m: 1, width: '100%' } ,width: '100%'}}
+      sx={{ display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 3,
+        '& .MuiTextField-root': { m: 2, width: '100%' },
+        width: '100%',
+        '& .MuiFormControl-root': { m: 1, width: '100%' }}}
       noValidate
       autoComplete="on"
     >
@@ -296,8 +340,13 @@ function transfornat(){
         </Grid>
        
         <Grid item xs={12} sm={6}>
-          <MultipleSelectChip fullWidth onDataTypeChange={handleAddType}
-           edited={props.edited} data={transfornat()} ></MultipleSelectChip>
+        
+          {existingData.id ?(<MultipleSelectChip fullWidth onDataTypeChange={handleAddType}
+            edited={props.edited} data={transfornat()} ></MultipleSelectChip>):
+            (<MultipleSelectChip fullWidth onDataTypeChange={handleAddType}
+              edited={props.edited} ></MultipleSelectChip>)
+        }
+          
         </Grid>
       </Grid>
       <Stack  direction="row">

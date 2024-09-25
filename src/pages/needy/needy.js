@@ -52,7 +52,23 @@ export default function NeedyDetails() {
 
     axios.defaults.baseURL = 'http://localhost:3600/api';
  
-    const createRequestfunc = async (day, time, type) => {
+    const createRequestfunc = async (day, time, type,id=null) => {
+      if(id)
+      {
+        try {
+          const req = await axios.put(`/needy_request/${id}`, {
+            day: day,
+            type_of_volunteerId: type,
+            part_in_dayId:time,
+          });
+          console.log(req.data);
+        } catch (err) {
+          console.error(err);
+          setError(err.response?.data?.message);
+        }     
+        return;
+      }
+      console.log("הגעתי לפונקציה המעצבנת"+day+" "+time+" "+type)
       try {
         const req = await axios.post('/needy_request', {
           day: day,
@@ -183,13 +199,18 @@ export default function NeedyDetails() {
             
         </Grid>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, width: '100%'}}  >
-          <AlertDialogSlide
+          <AlertDialogSlide variant="contained"
             title={"הגדרת משפחה כלא פעילה"}
             buttonContent={"העברה לארכיון"}
             alertContent={"פעולה זאת תעביר את המשפחה לארכיון והיא תוגדר כלא פעילה, האם את בטוחה בפעולה זו?"}
             id={id}
           ></AlertDialogSlide>
-          <Button sx={{m:3}} onClick={edited} variant="outlined">ערוך </Button>
+          <Button sx={{m:3,backgroundColor: '#e5e6ff',
+          border: 'none', 
+          color: '#000000',          
+          '&:hover': {
+            backgroundColor: '#c5c4ff', 
+          }}} onClick={edited} >ערוך </Button>
           </Box>
       </Box>
       </Grid>

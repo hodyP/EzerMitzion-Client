@@ -15,7 +15,7 @@ function Shibuz(props) {
   return (
 
     <div>
-      <Box dir="rtl" sx={{ width: '1000px' }}>
+      <Box dir="rtl" sx={{ width: '1000px' ,p:3}}>
         <Grid container sx={{ color: 'text.primary' }}>
           <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center' }}>
              <LocationCityIcon /><Typography>{city}</Typography>

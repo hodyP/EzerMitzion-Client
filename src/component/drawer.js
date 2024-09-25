@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useContext } from 'react';
+import { useContext,useState } from 'react';
 import { UserContext } from '../context/userContext'
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
@@ -39,16 +40,21 @@ import IndexReminder from '../pages/Reminders/indexReminder';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
-  const { currentUser, login, logout } = useContext(UserContext);
+  const { currentUser, login, logout, } = useContext(UserContext);
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user") || null)
+  );
+  
 const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
-    <div style={{ backgroundColor:"#F4F6FA" ,minHeight: '100vh',  }}>
+    <div style={{ backgroundColor:"#F4F6FA" ,minHeight: '100vh',display: 'flex',
+      flexDirection: 'column',
+        }}>
       <Toolbar />
       <Box
         sx={{
@@ -56,7 +62,7 @@ const handleDrawerToggle = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '20vh', // Set the height of the container as needed
+          height: '20vh', 
           
         }}
       >
@@ -67,9 +73,7 @@ const handleDrawerToggle = () => {
             width: 'auto',
             height: '100px',
           }}
-        />
-        
-        
+        />       
       </Box >
       <Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
 
@@ -78,7 +82,7 @@ const handleDrawerToggle = () => {
       <List dir="rtl" >
         {[{ text: 'אלפון', icon: <ContactPhoneIcon />, to: "/Alphone" },
         { text: 'אירועים זמניים', icon: <CalendarMonthIcon />, to: "/events" },
-        { text: 'הגדרות', icon: <SettingsIcon />, to: "/settings" },
+        { text: 'הוספת מנהל', icon: <PersonAddIcon />, to: "/register" },
         { text: 'עדכונים', icon: <NotificationsActiveIcon />, to: "/Updates" }
         ].map((obj, index) => (
           <ListItem  key={obj.text} disablePadding>
@@ -91,20 +95,26 @@ const handleDrawerToggle = () => {
           </ListItem>
         ))}
       </List>
-      <Divider />
+      {/* <Divider /> */}
  <br></br>
      
      
-      <List style={{ textAlign: 'center' ,fontWeight: 'bold' }}>
+      <List style={{ textAlign: 'center' ,fontWeight: 'bold' }} sx={{
+        position: 'absolute',
+        bottom: 3,
+        width: '100%',       
+        padding: '10px'
+      }}>
         {["יציאה"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton component={Link} to="/logout">
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
+          // <ListItem key={text} disablePadding>
+          //   <ListItemButton component={Link} to="/logout">
+          //     <ListItemIcon>
+               // <LogoutIcon /> 
+                  <Logout/>
+          //     </ListItemIcon>
+          //     <ListItemText primary={text} />
+          //   </ListItemButton>
+          // </ListItem> 
         ))}
       </List>
     </div>
@@ -113,6 +123,7 @@ const handleDrawerToggle = () => {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
+    user?(
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar
@@ -138,13 +149,7 @@ const handleDrawerToggle = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      {/* <Box
-        component="nav"
-       
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      > */}
-      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+     
       <Drawer
         container={container}
         variant="temporary"
@@ -172,14 +177,11 @@ const handleDrawerToggle = () => {
       >
         {drawer}
       </Drawer>
-      {/* </Box> */}
+     
       <Box
-
         dir="ltr"
         component="main"
-        sx={{
-          //flexGrow: 1,
-          //p: 3,
+        sx={{         
           marginLeft: 0,
           marginRight: 50,
           marginTop: 6,
@@ -199,7 +201,7 @@ const handleDrawerToggle = () => {
 
         <Routes>
           <Route path="/" element={<Alphone />} />
-          <Route path="/login" element={<SignIn />} />
+          {/* <Route path="/login" element={<SignIn />} /> */}
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/Alphone" element={<Alphone />} />
@@ -212,6 +214,7 @@ const handleDrawerToggle = () => {
         </Routes>
       </Box>
     </Box>
+     ):(<Routes><Route path="/" element={<SignIn />} /></Routes>)
   );
 }
 

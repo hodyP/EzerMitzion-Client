@@ -31,7 +31,7 @@ function NeedyReminder(props) {
               mx: 2,
             },
             margin:1,
-    
+            
       }}>
         
           <Link href={`/needy/${needy.id}`} sx={{color:"#10005b"}}>משפחת {needy.last_name  }  </Link>
@@ -40,7 +40,12 @@ function NeedyReminder(props) {
           <Divider orientation="vertical" variant="middle" flexItem />
           <span>הפעם האחרונה <br></br>{needy.last_time_updated} </span>
           <Divider orientation="vertical" variant="middle" flexItem />
-          <Button variant="contained" sx={{backgroundColor:"#10005b"}} onClick={() =>tmpp(needy.id )}>יצרתי קשר</Button>
+          <Button sx={{backgroundColor: '#e5e6ff',
+          border: 'none', 
+          color: '#000000',          
+          '&:hover': {
+            backgroundColor: '#c5c4ff', 
+          }}} onClick={() =>tmpp(needy.id )}>יצרתי קשר</Button>
           
           </Box>
         </>

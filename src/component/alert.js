@@ -31,7 +31,12 @@ export default function AlertDialogSlide(props) {
    
 return (
     <React.Fragment>
-        <Button variant="outlined" onClick={handleClickOpen}>
+        <Button  onClick={handleClickOpen} sx={{
+          backgroundColor: '#e5e6ff',         
+          color: '#000000',          
+          '&:hover': {
+            backgroundColor: '#c5c4ff'
+          }}}>
             {props.buttonContent}
         </Button>
         <Dialog

@@ -133,14 +133,21 @@ export default function CreateNeedy(props) {
   return (
     
    <Box
-      sx={{ '& .MuiTextField-root': { m:2, dir:"rtl",width: '100%' } ,width: '100%', '& .MuiFormControl-root': { m: 1, width: '100%' }}}
+      sx={{display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      p: 3,
+      '& .MuiTextField-root': { m: 2, width: '100%' },
+      width: '100%',
+      '& .MuiFormControl-root': { m: 1, width: '100%' }}}
       dir="rtl"
       component="form"
       onSubmit={formik.handleSubmit}
       noValidate
       autoComplete="on"
     >
-      <Typography variant="h5">הוספת משפחה</Typography>
+      <Typography sx={{margin: '0 auto',}} variant="h5">הוספת משפחה</Typography>
       {err && <Alert severity="error">{err}</Alert>}
       <Grid container spacing={2}>
         <Grid item  xs={12} sm={6} >

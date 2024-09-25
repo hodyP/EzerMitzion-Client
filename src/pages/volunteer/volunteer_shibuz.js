@@ -1,24 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import List from '@mui/material/List';
 import RequestCard from './../needy/request_card';
 import Typography from '@mui/material/Typography';
+import { Box, Button, Dialog } from '@mui/material';
+import AddTimerVolunteer from './addTimerVolunteer';
+import TimerVolunteer from './timerVolunteer';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import axios from 'axios';
+
 function Volunteer_shibuz(props) {
     const [value, setValue] = useState(0);
     const [showRequests, setShowRequests] = useState(true);
-    const [needyRequests, setNeedyRequests] = useState([]);
-    const [needyHistory,setNeedyHistory]=useState([]);
+    const [volunteerRequests, setVolunteerRequests] = useState([]);
+    const [volunteerHistory, setVolunteerHistory] = useState([]);
+    const [volunteerTimer, setVolunteerTimer] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [key, setKey] = useState(0);
+
     useEffect(() => {
-        fetchNeedyRequests();
-        fetchNeedyHistory ();
-    }
+        fetchVolunteerRequests();
+        fetchVolunteerHistory();
+        fetchVolunteerTimer();
+    }, [key]);
 
-        , [])
     function samePageLinkNavigation(event) {
-
         if (
             event.defaultPrevented ||
             event.button !== 0 || // ignore everything but left-click
@@ -31,12 +39,12 @@ function Volunteer_shibuz(props) {
         }
         return true;
     }
+
     function LinkTab(props) {
         return (
             <Tab
                 component="a"
                 onClick={(event) => {
-                    // Routing libraries handle this, you can remove the onClick handle when using them.
                     if (samePageLinkNavigation(event)) {
                         event.preventDefault();
                     }
@@ -47,87 +55,137 @@ function Volunteer_shibuz(props) {
     }
 
     const handleChange = (event, newValue) => {
-        // event.type can be equal to focus with selectionFollowsFocus.
         if (
             event.type !== 'click' ||
             (event.type === 'click' && samePageLinkNavigation(event))
         ) {
             setValue(newValue);
-            if (newValue === 0) {
-                // When the "משפחות" tab is selected (index 0), show the content.
-                setShowRequests(true);
-            } else {
-                // Hide the content when other tabs are selected.
-                setShowRequests(false);
-            }
+            setShowRequests(newValue === 0);
         }
-        console.log("showRequests:", showRequests);
     };
-    const fetchNeedyRequests = async () => {
+
+    const fetchVolunteerRequests = async () => {
         try {
             const response = await axios.get(`http://localhost:3600/api/needy_request/volunteer/${props.id}`);
-            console.log(response.data);
-            setNeedyRequests(response.data);
+            setVolunteerRequests(response.data);
             setLoading(false);
+            console.log(response.data)
         } catch (error) {
             console.error('Error fetching needy requests:', error);
             setLoading(false);
-        }      
+        }
     };
-    const fetchNeedyHistory = async () => {
+
+    const fetchVolunteerHistory = async () => {
         try {
             const response = await axios.get(`http://localhost:3600/api/needy_request/volunteer/${props.id}/history`);
-            console.log(response.data);
-            setNeedyHistory(response.data);
+            setVolunteerHistory(response.data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching needy requests:', error);
+            console.log('Error fetching needy history:', props.id);
             setLoading(false);
-        }      
+        }
     };
+
+    const fetchVolunteerTimer = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3600/api/volunteer_timer/volunteer/${props.id}`);
+            setVolunteerTimer(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching timer requests:', error);
+            setLoading(false);
+        }
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        success();
+    };
+
+    function success() {
+        setKey(prevKey => prevKey + 1);
+    }
+
     return (
-        <>
+        <Box key={key} sx={{ p: 2 }}>
             <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
-                <LinkTab label="סטטוס שיבוץ" href="/requests" />
+                <LinkTab label="התנדבויות" href="/requests" />
                 <LinkTab label="היסטוריה" href="/Requests" />
+                <div style={{ marginLeft: 6, marginRight: 'auto', display: 'flex', alignItems: 'center' }}>
+                    <Button variant="contained" onClick={handleClickOpen} sx={{ m: 1 }}>
+                       <PostAddIcon></PostAddIcon>  הוספת זמן התנדבות
+                    </Button>
+                    <Dialog open={open} onClose={handleClose}>
+                        <AddTimerVolunteer
+                            success={success}
+                            open={open}
+                            value={{ idVolunteer: props.id }}
+                            onClose={handleClose}
+                        />
+                    </Dialog>
+                </div>
             </Tabs>
+
             <List
                 sx={{
-                    width: '100%',
-                    height: '100%',
-                    bgcolor: 'background.paper',
+                    width: '85%',
+                    margin: '0 auto',
                     position: 'relative',
                     overflow: 'auto',
                     maxHeight: 500,
                     '& ul': { padding: 0 },
                 }}
-
             >
                 {showRequests ? (
                     <>
                         {loading ? (
                             <Typography>Loading...</Typography>
                         ) : (
-                            needyRequests.map(needyRequest => (
-                                <RequestCard needy={props.data} key={needyRequest.id} ask={"volunteer"} needyRequest={needyRequest}></RequestCard>
-                            ))
+                            <>
+                                {volunteerRequests.map(needyRequest => (
+                                    <RequestCard
+                                        needy={props.data}
+                                        key={needyRequest.id}
+                                        ask="volunteer"
+                                        needyRequest={needyRequest}
+                                        success={success}
+                                    />
+                                ))}
+                                {volunteerTimer.map(volunteer => (
+                                    <TimerVolunteer
+                                        key={volunteer.id}
+                                        ask="volunteer"
+                                        data={volunteer}
+                                        success={success}
+                                    />
+                                ))}
+                            </>
                         )}
                     </>
                 ) : (
                     <>
-                    {loading ? (
-                        <Typography>Loading...</Typography>
-                    ) : (
-                        needyHistory.map(needyRequest => (
-                            <RequestCard needy={props.data} key={needyRequest.id} ask={"volunteer"} needyRequest={needyRequest}></RequestCard>
-                        ))
-                    )}
-                </>
+                        {loading ? (
+                            <Typography>Loading...</Typography>
+                        ) : (
+                            volunteerHistory.map(volunteer => (
+                                <RequestCard
+                                    needy={props.data}
+                                    key={volunteer.id}
+                                    ask="volunteer"
+                                    needyRequest={volunteer}
+                                />
+                            ))
+                        )}
+                    </>
                 )}
             </List>
-        </>
-
-    )
+        </Box>
+    );
 }
 
-export default Volunteer_shibuz
+export default Volunteer_shibuz;

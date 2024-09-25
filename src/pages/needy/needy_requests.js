@@ -5,9 +5,11 @@ import List from '@mui/material/List';
 import RequestCard from './request_card';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-import { Button } from '@mui/material';
+import { Button ,Dialog} from '@mui/material';
 import CreateRequest from '../../component/createRequest';
+import "../../css/scollbar.css";
 import {Box} from '@mui/material';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 function Needy_requests(props) {
     const [value, setValue] = useState(0);
@@ -15,19 +17,18 @@ function Needy_requests(props) {
     const [needyRequests, setNeedyRequests] = useState([]);
     const [needyHistory, setNeedyHistory] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+    const [open, setOpen] = React.useState(false);
+    const [key, setKey] = React.useState(0); 
    
     useEffect(() => {
         fetchNeedyRequests();
         fetchNeedyHistory();
-    }
+    } , [key])
 
-        , [])
     function samePageLinkNavigation(event) {
-
         if (
             event.defaultPrevented ||
-            event.button !== 0 || // ignore everything but left-click
+            event.button !== 0 ||
             event.metaKey ||
             event.ctrlKey ||
             event.altKey ||
@@ -37,12 +38,12 @@ function Needy_requests(props) {
         }
         return true;
     }
+
     function LinkTab(props) {
         return (
             <Tab
                 component="a"
                 onClick={(event) => {
-                    // Routing libraries handle this, you can remove the onClick handle when using them.
                     if (samePageLinkNavigation(event)) {
                         event.preventDefault();
                     }
@@ -63,7 +64,7 @@ function Needy_requests(props) {
                 // When the "משפחות" tab is selected (index 0), show the content.
                 setShowRequests(true);
             } else {
-                // Hide the content when other tabs are selected.
+                
                 setShowRequests(false);
             }
         }
@@ -71,8 +72,7 @@ function Needy_requests(props) {
     };
     const fetchNeedyRequests = async () => {
         try {
-            const response = await axios.get(`http://localhost:3600/api/needy_request/needy/${props.id}`);
-            console.log(response.data);
+            const response = await axios.get(`http://localhost:3600/api/needy_request/needy/${props.id}`);          
             setNeedyRequests(response.data);
             setLoading(false);
         } catch (error) {
@@ -92,21 +92,41 @@ function Needy_requests(props) {
             setLoading(false);
         }
     };
+
+    function success(){
+        console.log("אני בהצלחה")
+        setKey(prevKey => prevKey + 1)
+      }
+
+      const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        console.log("אני בסגירה")
+          setOpen(false);
+        props.success();
+        
+    };
+
     return (
-        <Box sx={{p:2}}>
+        <Box sx={{p:2}} key={key}>
             <Tabs dir="rtl" value={value} onChange={handleChange} aria-label="nav tabs example">
-                <LinkTab label="סטטוס שיבוץ" href="/requests" />
+                <LinkTab label=" התנדבויות" href="/requests" />
                 <LinkTab label="היסטוריה" href="/Requests" />
                 <div style={{ marginLeft: 6, marginRight: 'auto', display: 'flex', alignItems: 'center' }}>
-                    {/* <Button variant="contained" size="small" onClick={()=>{props.createRequestfunc()}}>
-                       הוספת בקשה
-                    </Button> */}
-                    <CreateRequest createRequestfunc={props.createRequestfunc}></CreateRequest>
+                <Button variant="contained" onClick={handleClickOpen}>
+                    <PostAddIcon/> הוספת בקשה
+                </Button>          
+                        <CreateRequest createRequestfunc={props.createRequestfunc} 
+                        success={success} open={open}                         
+                        onClose={handleClose}>
+                        </CreateRequest>                                
                 </div>
             </Tabs>
-            <List
+            <List className="custom-list" style={{ maxHeight: '500px', overflowY: 'auto' }}
                 sx={{
-                    width: '90%',
+                    width: '85%',
                     margin: '0 auto',                         
                     position: 'relative',
                     overflow: 'auto',
@@ -120,7 +140,13 @@ function Needy_requests(props) {
                             <Typography>Loading...</Typography>
                         ) : (
                             needyRequests.map(needyRequest => (
-                                <RequestCard key={needyRequest.id} ask={props.ask} needyRequest={needyRequest} needy={props.needy}></RequestCard>
+                                <RequestCard key={needyRequest.id} 
+                                ask={props.ask} 
+                                needyRequest={needyRequest}
+                                 needy={props.needy}
+                                 success={success}
+                                 createRequestfunc={props.createRequestfunc} 
+                                 ></RequestCard>
                             ))
                         )}
                     </>

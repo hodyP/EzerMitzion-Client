@@ -1,24 +1,16 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-
+import { Button, Box, FormControl, InputLabel, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 export default function CreateRequest(props) {
-    const [open, setOpen] = React.useState(false);
-    const [type, setType] = React.useState("");
+    const value=props.values||{};
+    const [type, setType] = React.useState(value.type||"");
     const [types,setTypes]=React.useState([]);
-    const [time,setTime]=React.useState("");
+    const [time,setTime]=React.useState(value.time||"");
+    const [day,setDay]=React.useState(value.day||"");
+    
     
     React.useEffect(
+      
         () => {
             const fetchTypes = async () => {
               try {
@@ -35,98 +27,75 @@ export default function CreateRequest(props) {
             fetchTypes();
           }, []
     )
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
+    const times = [{name:"בוקר",id:1},{name:"צהרים",id:2},{name:"ערב",id:3}];
 
     return (
-        <React.Fragment >
-            <Button variant="contained" size="small" onClick={handleClickOpen}>
-                הוספת בקשה
+        <div>      
+        <Dialog open={props.open} onClose={props.onClose} maxWidth={false} 
+        PaperProps={{component: 'form',
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);                       
+              console.log({ day, time, type });
+              props.success();
+              props.createRequestfunc(day, time, type,value.id);
+              props.onClose();
+            },
+    sx: {  display: 'flex',
+      flexDirection: 'column', // מסדר את הילדים אחד מתחת לשני
+      alignItems: 'center',    // ממרכז אופקית
+      justifyContent: 'center',width: '400px', maxHeight: '90vh' }, 
+  }} >
+          <DialogTitle>הוסף בקשה למשפחה</DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 ,width: '100%',}} >
+              {/* בחירת יום */}
+              <FormControl fullWidth variant="standard">
+                <InputLabel >בחר יום</InputLabel>
+                <Select sx={{ minWidth: '300px' }} value={day} onChange={(e) => setDay(e.target.value)} label="בחר יום">
+                  {days.map((dayOption) => (
+                    <MenuItem key={dayOption} value={dayOption}>
+                      {dayOption}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+               
+              <FormControl fullWidth variant="standard">
+                <InputLabel>בחר זמן ביום</InputLabel>
+                <Select value={time} onChange={(e) => setTime(e.target.value)} label="בחר זמן ביום">
+                  {times.map((timeOption) => (
+                    <MenuItem key={timeOption} value={timeOption.id}>
+                      {timeOption.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+  
+              {/* בחירת תחום התנדבות */}
+              <FormControl fullWidth variant="standard">
+                <InputLabel>תחום התנדבות</InputLabel>
+                <Select value={type} onChange={(e) => setType(e.target.value)} label="תחום התנדבות">
+                {types.map((type) => (
+                        <MenuItem key={type.id} value={type.id}>
+                        {type.name}
+                        </MenuItem>
+                        ))}             
+                </Select>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={()=>{console.log("אני בקונסול הכי חופר בעולם!")
+              console.log("יום"+day+" זמן"+time+" סוג"+type+" ID"+value.id)
+              props.onClose()}}>ביטול</Button>
+            <Button type='submit'>
+              אישור
             </Button>
-
-            <Dialog dir='rtl'
-                open={open}
-                onClose={handleClose}
-                PaperProps={{
-                    component: 'form',
-                    onSubmit: (event) => {
-                        event.preventDefault();
-                        const formData = new FormData(event.currentTarget);
-                        const formJson = Object.fromEntries(formData.entries());
-                        const day= formJson.day;
-                        console.log({day,time,type});
-                        props.createRequestfunc(day,time,type);
-                        handleClose();
-                    },
-                }}
-            >
-                <DialogTitle>Subscribe</DialogTitle>
-                <DialogContent dir='rtl'>
-                    <DialogContentText>
-                        To subscribe to this website, please enter your email address here. We
-                        will send updates occasionally.
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="day"
-                        name="day"
-                        label="יום בשבוע"
-                        fullWidth
-                        variant="standard"
-                    />
-                    <FormControl variant="standard" fullWidth required>
-                        <InputLabel id="demo-simple-select-standard-label">זמן</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-standard-label"
-                            id="demo-simple-select-standard"
-                            value={time}
-                            onChange={(e) => { setTime(e.target.value) }}
-                            label="time"
-                        >
-                            
-                                <MenuItem value={1}>
-                                   בוקר
-                                </MenuItem>
-                                <MenuItem  value={2}>
-                                    צהריים
-                                </MenuItem>
-                                <MenuItem value={3}>
-                                   ערב
-                                </MenuItem>
-                            
-                        </Select>
-                    </FormControl>
-                    
-                    <FormControl variant="standard" fullWidth required>
-                        <InputLabel id="demo-simple-select-standard-label">סוג התנדבות</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-standard-label"
-                            id="demo-simple-select-standard"
-                            value={type}
-                            onChange={(e) => { setType(e.target.value) }}
-                            label="סוג ההתנדבות"
-                        >
-                            {types.map((type) => (
-                                <MenuItem key={type.id} value={type.id}>
-                                    {type.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>ביטול</Button>
-                    <Button type="submit">הוספה</Button>
-                </DialogActions>
-            </Dialog>
-        </React.Fragment>
+          </DialogActions>
+        </Dialog>
+      </div>
     );
 }

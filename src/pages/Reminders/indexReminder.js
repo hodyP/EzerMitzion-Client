@@ -7,7 +7,7 @@ function IndexReminder() {
    
     return (
         <>
-        <Box  display="flex" justifyContent="space-between"  flexDirection="row-reverse" sx={{ width: '100%' }}>
+        <Box  display="flex" justifyContent="space-between"  flexDirection="row-reverse" sx={{ width: '100%',height:"90vh" }}>
             <Box flex={1} 
             padding="10px" 
             maxHeight="100vh"

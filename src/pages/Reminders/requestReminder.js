@@ -37,12 +37,9 @@ function RequestReminder() {
     }
 
     const makeShibuz = async (id) => {
-        const updateData={
-            start_date:new Date(),
-            is_approved:true
-        }
+        
         const data={
-            updateData:updateData,
+            start_date:new Date(),
             is_approved:true
         }
         try 

@@ -55,6 +55,7 @@ export default function VolunteerDetails() {
       fetchData();
       console.log(data);
     }, [id,key])
+    
   const fetchfunc = async () => {
     try {
       const response = await axios.put(`http://localhost:3600/api/volunteer/unactive/${id}`);
@@ -196,12 +197,18 @@ export default function VolunteerDetails() {
             alertContent={"פעולה זאת תעביר את המתנדבת לארכיון והיא תוגדר כלא פעילה, האם את בטוחה בפעולה זו?"}
             id={id}
           ></AlertDialogSlide>
-          <Button sx={{m:3}} onClick={edited} variant="outlined">ערוך </Button>
+          <Button sx={{m:3,backgroundColor: '#e5e6ff',
+          border: 'none', 
+          color: '#000000',          
+          '&:hover': {
+            backgroundColor: '#c5c4ff', 
+          }}} onClick={edited} variant="outlined">ערוך </Button>
           </Box>
       </Box>
       </Grid>
       <Grid item xs={12} sm={7.5} style={{ height: '100vh ' ,p:3,backgroundColor: '#F4F6FA'}} >            
-             {/* <Needy_requests  createRequestfunc={createRequestfunc} id={id} ask={"needy"} needy={data}></Needy_requests>  */}
+             <Volunteer_shibuz id={data.id} ask={"volunteer"} ></Volunteer_shibuz> 
+             
         </Grid>
         </Grid>
           </Box>

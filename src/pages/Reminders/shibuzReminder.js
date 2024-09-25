@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Button, Chip,Divider, Avatar ,Grid} from '@mui/material';
 import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-import Face3OutlinedIcon from '@mui/icons-material/Face3Outlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import PhoneEnabledOutlinedIcon from '@mui/icons-material/PhoneEnabledOutlined';
 import Link from '@mui/material/Link';
 
@@ -36,7 +36,7 @@ const ShibuzReminder = (props) => {
            {requ.needy_requestsAndneedy.first_name} {requ.needy_requestsAndneedy.last_name}
            </Link>
       </Box>
-     <Divider sx={{ marginBottom: '16px', backgroundColor: '#1976d2' }} />
+     <Divider sx={{ marginBottom: '16px', backgroundColor: '#e0e0e0' }} />
      
 {/* ********************************************התיבה הגדולה *************************************** */}
     
@@ -125,7 +125,7 @@ const ShibuzReminder = (props) => {
           marginLeft: 1
         }}
       >
-        <Face3OutlinedIcon sx={{ color: '#A9A9A9' }}/>
+        <PersonOutlineIcon sx={{ color: '#A9A9A9' }}/>
         </Avatar>
       <Box sx={{ textAlign: 'right' }}>
         <Typography variant="subtitle2" color="textSecondary">

@@ -1,0 +1,19 @@
+/* styles.css */
+.custom-list::-webkit-scrollbar {
+    width: 1px; /* רוחב פס הגלילה */
+  }
+  
+  .custom-list::-webkit-scrollbar-thumb {
+    background-color: #d41010; /* צבע של ה-thumb */
+    border-radius: 10px;    /* פינות מעוגלות */
+  }
+  
+  .custom-list::-webkit-scrollbar-thumb:hover {
+    background-color: #8925d0; /* צבע ה-thumb בעת מעבר עכבר */
+  }
+  
+  .custom-list::-webkit-scrollbar-track {
+    background: #27bc1c;  /* צבע הרקע של המסלול */
+    border-radius: 10px;   /* פינות מעוגלות */
+  }
+  

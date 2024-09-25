@@ -28,11 +28,9 @@ function getStyles(name, personName, theme) {
   };
 }
 
-
-
 export default function MultipleSelectChip(props) {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState(props.data||[]);
+  const [personName, setPersonName] = React.useState([]);
   const [types, setTypes] = React.useState([]);
   
   React.useEffect(() => {
@@ -47,6 +45,8 @@ export default function MultipleSelectChip(props) {
       } catch (error) {
         console.error('Error fetching types:', error);
       }
+       if(props.data)
+       setPersonName(props.data)
 
     };
   

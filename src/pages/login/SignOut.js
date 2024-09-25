@@ -2,6 +2,7 @@ import { useContext, useState, React } from "react";
 import { UserContext } from "../../context/userContext";
 import { useNavigate } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
+import {Box} from "@mui/material";
 
 import {
   DialogActions,
@@ -42,9 +43,14 @@ const Logout = () => {
 
   return (
     <>
-      <Button onClick={handleClickOpen}>
-        {" "}
-        <MdLogout style={{ fontSize: 25 }} />
+      <Button onClick={handleClickOpen}sx={{width:"100%",'&:hover': {
+            backgroundColor: '#d4d4d4', // צבע הרקע במצב hover
+          }}}>
+        <Box sx={{display:"flex",color:"black",fontSize:"27",gap:3}}>
+          יציאה   <MdLogout style={{ fontSize: 27 }} />
+        </Box>
+        
+        
       </Button>
       <Dialog
         open={open}
