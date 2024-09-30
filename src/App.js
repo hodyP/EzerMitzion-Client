@@ -1,16 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
-import Register from './pages/register/register';
-import SignIn from "./pages/login/SignIn";
 import { UserContextProvider } from "./context/userContext";
-import Logout from "./pages/login/SignOut";
-import ResponsiveAppBar from "./component/navbar";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ResponsiveDrawer from "./component/drawer";
-
-import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter as Router, Route} from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import { CurrentUser } from "./context/userContext";
+import SignIn from "./pages/login/SignIn";
+import Alphone from "./pages/Alphone/Alphone";
 
 const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar {
@@ -56,16 +51,36 @@ const theme = createTheme({
   
 });
 
+// const isAuthenticated = () => {
+//   // בדוק אם יש ערך ב-localStorage שמצביע על חיבור המשתמש
+//   return !!localStorage.getItem('userToken');
+// };
+
+// const PrivateRoute = ({ component: Component, ...rest }) => (
+//   <Route
+//     {...rest}
+//     render={props =>
+//       isAuthenticated() ? (
+//         <Component {...props} />
+//       ) : (
+//         <Redirect to="/login" />
+//       )
+//     }
+//   />
+// );
+
 function App() {
-  return (<UserContextProvider>
+  return (
     <Router>
+      <UserContextProvider>
     <GlobalStyle />
       <ThemeProvider theme={theme}>
     <ResponsiveDrawer>
     </ResponsiveDrawer>
   </ThemeProvider>
-</Router>
   </UserContextProvider> 
+</Router>
+
   );
 }
 export default App;

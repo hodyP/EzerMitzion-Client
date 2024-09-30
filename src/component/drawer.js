@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useContext,useState } from 'react';
-import { UserContext } from '../context/userContext'
+import { useContext,useState,useEffect } from 'react';
+import { useUser } from '../context/userContext'
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,7 +18,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { Navigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -37,19 +37,23 @@ import Time from './time';
 import Reminder from '../pages/Reminders/Reminder';
 import IndexReminder from '../pages/Reminders/indexReminder';
 
+
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
-  const { currentUser, login, logout, } = useContext(UserContext);
+  const { currentUser } = useUser();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user") || null)
-  );
-  
+ 
 const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user");
+    console.log("User JSON:", userJSON);
+    console.log("זה הפרמטר המכריע"+currentUser)
+  }, []);
 
   const drawer = (
     <div style={{ backgroundColor:"#F4F6FA" ,minHeight: '100vh',display: 'flex',
@@ -75,7 +79,8 @@ const handleDrawerToggle = () => {
           }}
         />       
       </Box >
-      <Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>
+      {currentUser?(<Typography style={{ textAlign: 'center' ,fontWeight: 'bold' ,}} >{`${currentUser.first_name} ${currentUser.last_name}`}</Typography>)
+      :(<></>)}
 
       <Time></Time>
       <Divider />
@@ -95,10 +100,7 @@ const handleDrawerToggle = () => {
           </ListItem>
         ))}
       </List>
-      {/* <Divider /> */}
  <br></br>
-     
-     
       <List style={{ textAlign: 'center' ,fontWeight: 'bold' }} sx={{
         position: 'absolute',
         bottom: 3,
@@ -106,15 +108,8 @@ const handleDrawerToggle = () => {
         padding: '10px'
       }}>
         {["יציאה"].map((text, index) => (
-          // <ListItem key={text} disablePadding>
-          //   <ListItemButton component={Link} to="/logout">
-          //     <ListItemIcon>
-               // <LogoutIcon /> 
-                  <Logout/>
-          //     </ListItemIcon>
-          //     <ListItemText primary={text} />
-          //   </ListItemButton>
-          // </ListItem> 
+          
+          <Logout/> 
         ))}
       </List>
     </div>
@@ -123,7 +118,7 @@ const handleDrawerToggle = () => {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    user?(
+    currentUser?(
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar
@@ -149,7 +144,6 @@ const handleDrawerToggle = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-     
       <Drawer
         container={container}
         variant="temporary"
@@ -177,7 +171,6 @@ const handleDrawerToggle = () => {
       >
         {drawer}
       </Drawer>
-     
       <Box
         dir="ltr"
         component="main"
@@ -189,19 +182,16 @@ const handleDrawerToggle = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
-          justifyContent: 'flex-end',
-          // הוספת סגנון ישירות לאלמנט
+          justifyContent: 'flex-end',       
           "& > div": {
             marginLeft: 0,
             marginRight: drawerWidth,
-          },
-          
+          },     
         }}
       >
-
         <Routes>
-          <Route path="/" element={<Alphone />} />
-          {/* <Route path="/login" element={<SignIn />} /> */}
+          <Route path="/" element={<Alphone />} />       
+          <Route path="/login" element={<SignIn />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/Alphone" element={<Alphone />} />
@@ -214,7 +204,11 @@ const handleDrawerToggle = () => {
         </Routes>
       </Box>
     </Box>
-     ):(<Routes><Route path="/" element={<SignIn />} /></Routes>)
+     ):(
+      <Routes>
+      <Route path="/" element={<SignIn />} />
+        </Routes>
+        )
   );
 }
 

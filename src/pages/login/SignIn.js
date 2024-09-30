@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { UserContext } from "../../context/userContext";
+import { useUser,UserContextProvider } from "../../context/userContext";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -22,15 +22,15 @@ import { useNavigate } from "react-router-dom";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-const CurrentUser=UserContext.a;
+
 
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+  const { login } = useUser();
   const [err, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("פונקציה למציאת משתמש"+CurrentUser);
+    
     const data = new FormData(event.currentTarget);
     const userDetails={
       firstName: data.get('firstName'),
@@ -122,5 +122,6 @@ const CurrentUser=UserContext.a;
         
       </Container>
     </ThemeProvider>
+    
   );
 }
