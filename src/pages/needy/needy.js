@@ -68,13 +68,13 @@ export default function NeedyDetails() {
         }     
         return;
       }
-      console.log("הגעתי לפונקציה המעצבנת"+day+" "+time+" "+type)
+      console.log("הגעתי לפונקציה המעצבנת"+day+" "+time+" "+type+" "+id)
       try {
         const req = await axios.post('/needy_request', {
           day: day,
           type_of_volunteerId: type,
           part_in_dayId:time,
-          needyId:parseInt(id)
+          needyId:data.id
         });
         console.log(req.data);
       } catch (err) {

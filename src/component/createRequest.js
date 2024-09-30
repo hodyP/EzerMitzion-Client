@@ -10,7 +10,6 @@ export default function CreateRequest(props) {
     
     
     React.useEffect(
-      
         () => {
             const fetchTypes = async () => {
               try {
