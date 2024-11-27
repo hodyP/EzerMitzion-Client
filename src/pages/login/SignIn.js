@@ -5,13 +5,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import AppBar from '@mui/material/AppBar';
+import MenuIcon from '@mui/icons-material/Menu';
+import {Toolbar} from '@mui/material';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
+
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
+import { IconButton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useUser,UserContextProvider } from "../../context/userContext";
 import { useContext, useState, useEffect } from "react";
@@ -47,8 +52,28 @@ export default function SignIn() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    //<ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
+      <AppBar
+        position="fixed"
+       
+      >
+        <Toolbar dir="rtl" backgroundColor="#f0e9ff">
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+           // onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            עזר מציון
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <br></br><br></br>
         <CssBaseline />
         <Box
           sx={{
@@ -58,11 +83,11 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon sx={{backgroundcolor:"pink"}}/>
+          <Avatar sx={{ m: 1, bgcolor: 'red' }}>
+            <LockOutlinedIcon sx={{backgroundcolor:"#1A2027"}}/>
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            הזדהות
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {err !== null && <Alert severity="error">{err}</Alert>}
@@ -71,7 +96,7 @@ export default function SignIn() {
               required
               fullWidth
               id="firstName"
-              label="firstName"
+              label="שם"
               name="firstName"
               autoComplete="firstName"
               autoFocus
@@ -81,7 +106,7 @@ export default function SignIn() {
               required
               fullWidth
               id="lastName"
-              label="lastName"
+              label="משפחה"
               name="lastName"
               autoComplete="lastName"
               autoFocus
@@ -91,14 +116,14 @@ export default function SignIn() {
               required
               fullWidth
               name="password"
-              label="Password"
+              label="סיסמה"
               type="password"
               id="password"
               autoComplete="current-password"
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+              label="זכור אותי"
             />
             <Button
               type="submit"
@@ -106,14 +131,10 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+             אישור
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
+             
               <Grid item>           
               </Grid>
             </Grid>
@@ -121,7 +142,7 @@ export default function SignIn() {
         </Box>
         
       </Container>
-    </ThemeProvider>
+   // </ThemeProvider>
     
   );
 }

@@ -26,17 +26,17 @@ export default function NestedList() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const { id, city, neighborhood, type, day, partInDay } = useParams();
-  console.log({ id, city, neighborhood, type, day, partInDay } )
-  const hamtanafunc=async(item)=>{
+  console.log({ id, city, neighborhood, type, day, partInDay })
+  const hamtanafunc = async (item) => {
     try {
-      const requestId = id;   
+      const requestId = id;
       const response = await axios.put(`http://localhost:3600/api/needy_request/${requestId}/shibuz`, {
-        id: requestId,     
-        volunteerId:item.id,    
+        id: requestId,
+        volunteerId: item.id,
         start_date: new Date().toISOString().split('T')[0],
         is_approved: false
       });
-  
+
       // Check if the request was successful
       if (response.ok) {
         Navigate(`/needy/${id}`);
@@ -46,41 +46,57 @@ export default function NestedList() {
         console.error('Failed to update on the server');
         // Handle failure, show an error message, etc.
       }
-  
+
     } catch (error) {
       // Handle errors, such as network issues or server errors
       console.error('Error updating on the server:', error);
     }
   }
-const shibuzfunc=async(item)=>{
-  try {
+  const shibuzfunc = async (item) => {
     const requestId = id;
-   console.log( {id: requestId,     
-    volunteerId:item.id,    
-    start_date: new Date().toISOString().split('T')[0],
-    is_approved: true})
-    const response = await axios.put(`http://localhost:3600/api/needy_request/${requestId}/shibuz`, {
-      id: requestId,     
-      volunteerId:item.id,    
-      start_date: new Date().toISOString().split('T')[0],
-      is_approved: true
-    });
+    const volunteerId=item.id
+    try {
+      
+      console.log({
+        id: requestId,
+        volunteerId: item.id,
+        start_date: new Date().toISOString().split('T')[0],
+        is_approved: true
+      })
+      const response = await axios.put(`http://localhost:3600/api/needy_request/${requestId}/shibuz`, {
+        id: requestId,
+        volunteerId: item.id,
+        start_date: new Date().toISOString().split('T')[0],
+        is_approved: true
+      });
 
-    // Check if the request was successful
-    if (response.ok) {
-      Navigate(`/needy/${id}`);
-      console.log('Server update successful');
-      // Handle success, if needed
-    } else {
-      console.error('Failed to update on the server');
-      // Handle failure, show an error message, etc.
+      // Check if the request was successful
+      if (response.ok) {
+        try {
+          const response = await axios.put(`http://localhost:3600/api/volunteer_timer`, {
+            volunteerId: volunteerId,
+            day: day,
+            partInDayId: partInDay,
+            is_matched: true
+          });
+
+        } catch (error) {
+          // Handle errors, such as network issues or server errors
+          console.error('Error updating on the server:', error);
+         
+        }
+      
+      }
+      else {
+        console.error('Failed to update on the server');
+        // Handle failure, show an error message, etc.
+      }
+
+    } catch (error) {
+      // Handle errors, such as network issues or server errors
+      console.error('Error updating on the server:', error);
     }
-
-  } catch (error) {
-    // Handle errors, such as network issues or server errors
-    console.error('Error updating on the server:', error);
   }
-}
 
   React.useEffect(() => {
 
@@ -131,7 +147,7 @@ const shibuzfunc=async(item)=>{
                       <PersonIcon />
                     </ListItemIcon>
                     <ListItemText primary={
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'  }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>{item.first_name}</div>
                         <Divider orientation="vertical" variant="middle" flexItem />
                         <div>{item.last_name}</div>
@@ -143,10 +159,10 @@ const shibuzfunc=async(item)=>{
                         <div>{item.phone}</div>
                         <Divider orientation="vertical" variant="middle" flexItem />
                         <div>{item.mail}</div>
-                        <Divider orientation="vertical" variant="middle" flexItem /> 
-                        <Button  variant="contained" onClick={()=>{hamtanafunc(item)}}>המתנה</Button>
-                        <Button variant="contained" onClick={()=>{shibuzfunc(item)}}>שבץ</Button>
-                        
+                        <Divider orientation="vertical" variant="middle" flexItem />
+                        <Button variant="contained" onClick={() => { hamtanafunc(item) }}>המתנה</Button>
+                        <Button variant="contained" onClick={() => { shibuzfunc(item) }}>שבץ</Button>
+
                       </div>
                     } />
 

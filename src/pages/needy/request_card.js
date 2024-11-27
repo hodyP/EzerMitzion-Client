@@ -32,7 +32,7 @@ export default function RequestCard(props) {
     is_approved,
     needy_requestsAndneedy = {} } = props.needyRequest || {};
   const { first_name = "", last_name = "" } = needy_requestsAndvolunteer || needy_requestsAndneedy;
-  const { name_time = "" } = needy_requestsAndpart_in_dayId;
+  const { name_time = "" ,part_in_dayId=id} = needy_requestsAndpart_in_dayId;
   const { name } = needy_requestsAndtype_of_volunteer;
   const fullName = (props.ask === "needy") ? (`${first_name} ${last_name}`) : (`משפחת ${needy_requestsAndneedy.last_name}`);
   const type = name;
